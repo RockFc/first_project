@@ -30,3 +30,7 @@
 *.exe
 *.out
 *.app
+
+
+gtest_demo/build/
+gtest_demo/product/
