@@ -13,4 +13,4 @@ AUX_SOURCE_DIRECTORY(. src)
 #add_library(src ${src})
 
 #生成可执行程序
-add_executable(src_sult ${src})
+add_executable(s_src_main ${src})

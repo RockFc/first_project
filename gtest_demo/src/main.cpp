@@ -1,7 +1,10 @@
-# include <iostream>
-# include "calc.h"
+# include "common.h"
+# include "counter.h"
 int main()
 {
-    std::cout<<"3+5="<<Calc::Add(3, 5)<<std::endl;
+    Counter co;
+    std::cout<<"first call AddOnce:" << co.AddOnce() << endl;
+    Calc ca;
+    std::cout<<"3+5="<<ca.Add(3, 5)<<std::endl;
     return 0;
 }
