@@ -1,17 +1,9 @@
 # pragma once
 # include <iostream>
+# include <memory>
 
-std::string GetString()
-{
-    return string("1.0.0");
-}
+std::string GetString();
 
-int GetInt()
-{
-    return 100;
-}
+int GetInt();
 
-bool GetBool()
-{
-    return true;
-}
+bool GetBool();

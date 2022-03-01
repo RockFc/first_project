@@ -1,9 +1,10 @@
-void Init()
+#include "counter.h"
+void Counter::Init()
 {
     
 }
 
-void Uninit()
+void Counter::Uninit()
 {
     
 }
@@ -22,7 +23,7 @@ int  Counter::SubOnce()
     return --m_count_number;
 }
 
-int GetCurNum()
+int Counter::GetCurNum()
 {
     return m_count_number;
 }

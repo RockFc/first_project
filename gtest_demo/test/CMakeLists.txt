@@ -22,12 +22,12 @@ list(REMOVE_ITEM src "${PROJECT_SOURCE_DIR}/src/main.cpp")
 
 
 add_executable(s_ut_common ut_common.cpp ${src})
-TARGET_LINK_LIBRARIES(s_ut_common gtest gtest_main)
+TARGET_LINK_LIBRARIES(s_ut_common gtest gtest_main ${CMAKE_THREAD_LIBS_INIT})
 
 add_executable(s_ut_counter_1 ut_counter_1.cpp ${src})
-TARGET_LINK_LIBRARIES(s_ut_counter_1 gtest gtest_main)
+TARGET_LINK_LIBRARIES(s_ut_counter_1 gtest gtest_main ${CMAKE_THREAD_LIBS_INIT})
 
 add_executable(s_ut_counter_2 ut_counter_2.cpp ${src})
-TARGET_LINK_LIBRARIES(s_ut_counter_2 gtest gtest_main)
+TARGET_LINK_LIBRARIES(s_ut_counter_2 gtest gtest_main ${CMAKE_THREAD_LIBS_INIT})
 
-TARGET_LINK_LIBRARIES(test_sult ${CMAKE_THREAD_LIBS_INIT})
+#TARGET_LINK_LIBRARIES(s_ut_common ${CMAKE_THREAD_LIBS_INIT})

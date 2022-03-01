@@ -25,7 +25,7 @@ protected:
     virtual void TearDown()
     {
         //调用测试对象的反初始化函数
-        m_co.Uinit();
+        m_co.Uninit();
         //判断用例执行是否超时
         const time_t end_time = time(nullptr);
         EXPECT_TRUE(end_time - m_start_time <= 5) << "The test took too long.";
@@ -36,23 +36,23 @@ protected:
 };
 
 //每个测试用例都拥有独立的夹具类CounterTest对象
-TEST(CounterTest, AddOnce_1)
+TEST_F(CounterTest, AddOnce_1)
 {
     EXPECT_EQ(m_co.AddOnce(), 1);
 }
 
-TEST(CounterTest, AddOnce_1)
+TEST_F(CounterTest, AddOnce_2)
 {
     EXPECT_EQ(m_co.AddOnce(), 1);
 }
 
-TEST(CounterTest, SubOnce_1)
+TEST_F(CounterTest, SubOnce_1)
 {
     EXPECT_EQ(m_co.AddOnce(), 1);
     EXPECT_EQ(m_co.SubOnce(), 0);
 }
 
-TEST(CounterTest, SubOnce_2)
+TEST_F(CounterTest, SubOnce_2)
 {
     EXPECT_EQ(m_co.AddOnce(), 1);
     sleep(6);

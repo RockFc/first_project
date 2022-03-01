@@ -1,12 +1,12 @@
 #pragma once
-
+#include "common.h"
 class Counter
 {
 public:
     void Init();
+    void Uninit();
     int AddOnce();
     int SubOnce();
-    void Uninit();
 
 private:
     int GetCurNum();
