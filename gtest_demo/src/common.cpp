@@ -1,8 +1,8 @@
-# include "common.h"
+#include "common.h"
 
 std::string GetString()
 {
-    return std::string("1.0.0");
+    return std::string( "1.0.0" );
 }
 
 int GetInt()

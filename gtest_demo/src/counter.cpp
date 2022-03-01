@@ -1,22 +1,16 @@
 #include "counter.h"
-void Counter::Init()
-{
-    
-}
+void Counter::Init() {}
 
-void Counter::Uninit()
-{
-    
-}
+void Counter::Uninit() {}
 
-int  Counter::AddOnce()
+int Counter::AddOnce()
 {
     return ++m_count_number;
 }
 
-int  Counter::SubOnce()
+int Counter::SubOnce()
 {
-    if(m_count_number == 0)
+    if ( m_count_number == 0 )
     {
         return 0;
     }

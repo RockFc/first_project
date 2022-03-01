@@ -5,8 +5,8 @@ class Counter
 public:
     void Init();
     void Uninit();
-    int AddOnce();
-    int SubOnce();
+    int  AddOnce();
+    int  SubOnce();
 
 private:
     int GetCurNum();
