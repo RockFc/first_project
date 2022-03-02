@@ -28,3 +28,8 @@ TEST( test_common, GetString )
 {
     EXPECT_STREQ( GetString().c_str(), "1.0.0" );
 }
+
+TEST( test_common, GetString )
+{
+    EXPECT_STRNE( GetString().c_str(), "1.0.1" );
+}
