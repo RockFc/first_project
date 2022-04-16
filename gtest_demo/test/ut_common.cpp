@@ -19,17 +19,17 @@ TEST( test_common, GetInt_3 )
     std::cout << "ASSERT_EQ interrupt test case!" << std::endl;
 }
 
-TEST( test_common, GetBool )
+TEST( test_common, GetBool_1 )
 {
     EXPECT_EQ( GetBool(), true );
 }
 
-TEST( test_common, GetString )
+TEST( test_common, GetString_1 )
 {
     EXPECT_STREQ( GetString().c_str(), "1.0.0" );
 }
 
-TEST( test_common, GetString )
+TEST( test_common, GetString_2 )
 {
     EXPECT_STRNE( GetString().c_str(), "1.0.1" );
 }
