@@ -33,6 +33,7 @@ TEST_F( CounterTest, AddOnce_1 )
 
 TEST_F( CounterTest, AddOnce_2 )
 {
+    EXPECT_EQ( m_co->AddOnce(), 2 );
     //这时候由于所有用例共用一个静态测试对象，所以进入此用例的时候，m_co的计数值已经变成了1
     //递加一次后，已经变成了2
     std::cout << "use static test object......." << std::endl;
