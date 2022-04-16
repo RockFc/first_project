@@ -9,13 +9,13 @@ TEST( test_common, GetInt_1 )
 TEST( test_common, GetInt_2 )
 {
     //如果检测失败，则会打印后面的日志信息
-    EXPECT_EQ( GetInt(), 0 ) << "EXPECT_EQ don't interrupt test case!";
+    EXPECT_EQ( GetInt(), 100 ) << "EXPECT_EQ don't interrupt test case!";
     std::cout << "EXPECT_EQ don't interrupt test case!" << std::endl;
 }
 
 TEST( test_common, GetInt_3 )
 {
-    ASSERT_EQ( GetInt(), 0 ) << "ASSERT_EQ interrupt test case!";
+    ASSERT_EQ( GetInt(), 100 ) << "ASSERT_EQ interrupt test case!";
     std::cout << "ASSERT_EQ interrupt test case!" << std::endl;
 }
 
