@@ -3,7 +3,7 @@
 cmake_minimum_required(VERSION 2.8)
 
 # 工程名
-set (PROJECT_NAME gtest_demo_2)
+set (PROJECT_NAME algo_training)
 PROJECT(${PROJECT_NAME})
 
 # 设置option开关默认值
@@ -24,16 +24,12 @@ link_directories(
 
 #设置编译选项
 set(CMAKE_C_FLAGS   "${CMAKE_C_FLAGS}   -Wall -fPIC -pipe -std=gnu90")
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -fPIC -pipe -lpthread -fno-exceptions -Wno-invalid-offsetof")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -fPIC -pipe -std=gnu++14 -lpthread -fno-exceptions -Wno-invalid-offsetof")
 if (ENABLE_GCOV)
     set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -fprofile-arcs -ftest-coverage")
     set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -fprofile-arcs -ftest-coverage")
     set(CMAKE_EXE_LINKER_FLAGS_DEBUG "${CMAKE_EXE_LINKER_FLAGS_DEBUG} -fprofile-arcs -ftest-coverage -lgcov")
 endif()
-set(CMAKE_CXX_STANDARD 14)
-set(CMAKE_CXX_STANDARD_REQUIRED ON)
-set(CMAKE_CXX_EXTENSIONS OFF)
-
 
 #设置输出文件路径
 set (EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/product/bin)
@@ -46,5 +42,4 @@ message("KDS_MOBILE_STOCK_HOME目录: " $ENV{KDS_MOBILE_STOCK_HOME})
 message("编译后可执行程序目录: " ${EXECUTABLE_OUTPUT_PATH})
 message("编译后库程序文件目录: " ${LIBRARY_OUTPUT_PATH})
 
-ADD_SUBDIRECTORY(src)
-ADD_SUBDIRECTORY(test)
+add_subdirectory(src)

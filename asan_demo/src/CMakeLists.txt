@@ -1,0 +1,1 @@
+add_executable(asan_test asan_test.cpp)
