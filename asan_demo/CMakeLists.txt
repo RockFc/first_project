@@ -63,4 +63,4 @@ message("KDS_MOBILE_STOCK_HOME目录: " $ENV{KDS_MOBILE_STOCK_HOME})
 message("编译后可执行程序目录: " ${EXECUTABLE_OUTPUT_PATH})
 message("编译后库程序文件目录: " ${LIBRARY_OUTPUT_PATH})
 
-add_executable(asan_test asan_test.cpp)
+add_subdirectory(src)
