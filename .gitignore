@@ -34,3 +34,9 @@
 
 gtest_demo/build/
 gtest_demo/product/
+
+algo_training/build/
+algo_training/product/
+
+asan_demo/build/
+asan_demo/product/
