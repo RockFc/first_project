@@ -17,11 +17,11 @@ void select_sort(std::vector<int>& v)
 {
     size_t len = v.size();
     // 从第0个元素开始循环，认为第i个元素之前的元素均已经排序
-    for(auto i = 0; i < len-1; i++)
+    for(size_t i = 0; i < len-1; i++)
     {
         // 从第1个元素开始往后，查找最小元素，下标记为min
-        auto min = i;
-        for(auto j=i+1; j<len; j++)
+        size_t min = i;
+        for(size_t j=i+1; j<len; j++)
         {
             if(v[j] < v[min])
             {
@@ -38,10 +38,10 @@ void bubble_sort(std::vector<int>& v)
 {
     size_t len = v.size();
     // 从第0个元素开始循环，认为第i个元素之前的元素已经排序
-    for(auto i = 0; i < len-1; i++)
+    for(size_t i = 0; i < len-1; i++)
     {
         // 从第1个元素开始往后，查找最小元素，下标记为min
-        for(auto j=i+1; j<len; j++)
+        for(size_t j=i+1; j<len; j++)
         {
             if(v[j] < v[i])
             {
