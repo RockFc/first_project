@@ -38,7 +38,6 @@ set (LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/product/lib)
 #打印环境信息
 message("工程名: " ${PROJECT_NAME})
 message("工程目录: " ${PROJECT_SOURCE_DIR})
-message("KDS_MOBILE_STOCK_HOME目录: " $ENV{KDS_MOBILE_STOCK_HOME})
 message("编译后可执行程序目录: " ${EXECUTABLE_OUTPUT_PATH})
 message("编译后库程序文件目录: " ${LIBRARY_OUTPUT_PATH})
 
