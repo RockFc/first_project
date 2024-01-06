@@ -40,3 +40,6 @@ algo_training/product/
 
 asan_demo/build/
 asan_demo/product/
+
+std_container_test/build/
+std_container_test/product/
