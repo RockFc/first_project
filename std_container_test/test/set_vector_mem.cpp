@@ -32,17 +32,18 @@ protected:
 
 const size_t LOOP_CNT = 1000000;
 
-// std::vector< std::vector<std::string> > g_v;
+// std::vector< std::vector< std::string > > g_vv;
 
-// TEST_F( ContainerTest, vector_add_1 )
+// TEST_F( ContainerTest, vector_vector_add_1 )
 // {
+//     std::vector< std::string >* p_v = new std::vector< std::string >;
 //     for ( size_t i = 0; i < LOOP_CNT; i++ )
 //     {
-//         std::vector<std::string> v;
-//         v.push_back( std::to_string( i ) );
-//         if ( i % 10 == 0)
+//         p_v->push_back( std::to_string( i ) );
+//         if ( i % 10 == 0 )
 //         {
-//             g_v.push_back(v);
+//             g_vv.push_back( *p_v );
+//             p_v = new std::vector< std::string >;
 //         }
 //     }
 // }
@@ -61,13 +62,14 @@ std::vector< std::set< std::string > > g_vs;
 
 TEST_F( ContainerTest, vector_set_add_1 )
 {
+    std::set< std::string >* p_s = new std::set< std::string >;
     for ( size_t i = 0; i < LOOP_CNT; i++ )
     {
-        std::set< std::string > s;
-        s.insert( std::to_string( i ) );
+        p_s->insert( std::to_string( i ) );
         if ( i % 10 == 0 )
         {
-            g_vs.push_back( s );
+            g_vs.push_back( *p_s );
+            p_s = new std::set< std::string >;
         }
     }
 }
