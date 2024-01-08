@@ -73,3 +73,17 @@ TEST_F( ContainerTest, vector_set_add_1 )
         }
     }
 }
+
+/*
+[ RUN      ] ContainerTest.vector_vector_add_1
+TearDown  Memory usage: 93392 KB
+[       OK ] ContainerTest.vector_vector_add_1 (162 ms)
+
+[ RUN      ] ContainerTest.set_add_1
+TearDown  Memory usage: 81664 KB
+[       OK ] ContainerTest.set_add_1 (514 ms)
+
+[ RUN      ] ContainerTest.vector_set_add_1
+TearDown  Memory usage: 171384 KB
+[       OK ] ContainerTest.vector_set_add_1 (267 ms)
+*/
