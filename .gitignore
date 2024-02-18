@@ -43,3 +43,6 @@ asan_demo/product/
 
 std_container_test/build/
 std_container_test/product/
+
+redis_plus_plus_demo/build/
+redis_plus_plus_demo/product/
