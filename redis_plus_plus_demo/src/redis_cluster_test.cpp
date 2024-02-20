@@ -32,7 +32,7 @@ int main()
         // ***** Redis Cluster *****
 
         // Create a RedisCluster object, which is movable but NOT copyable.
-        auto redis_cluster = RedisCluster( "tcp://127.0.0.1:7000" );
+        auto redis_cluster = RedisCluster( "tcp://127.0.0.1:7001" );
 
         // RedisCluster has similar interfaces as Redis.
         redis_cluster.set( "key", "value" );
@@ -41,6 +41,20 @@ int main()
         {
             std::cout << *val << std::endl;
         }  // else key doesn't exist.
+
+        // std::vector<std::string> to Redis LIST.
+        std::vector< std::string > vec = { "a", "b", "c" };
+        redis_cluster.del( "list" );
+        redis_cluster.rpush( "list", vec.begin(), vec.end() );
+
+        // std::initializer_list to Redis LIST.
+        redis_cluster.rpush( "list", { "a", "b", "c" } );
+
+        // Redis LIST to std::vector<std::string>.
+        vec.clear();
+        redis_cluster.lrange( "list", 0, -1, std::back_inserter( vec ) );
+
+        show_vec( "list", vec );
 
         // Keys with hash-tag.
         redis_cluster.set( "key{tag}1", "val1" );
