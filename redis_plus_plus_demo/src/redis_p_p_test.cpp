@@ -235,6 +235,8 @@ int main()
     catch ( const Error& e )
     {
         // Error handling.
+        std::cerr << e.what() << std::endl;
+        return 1;
     }
     return 0;
 }
