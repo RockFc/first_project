@@ -111,6 +111,7 @@ int main()
 
         // Script returns a single element.
         auto num = redis.eval< long long >( "return 1", {}, {} );
+        std::cout << "Evaluated number: " << num << std::endl;
 
         // Script returns an array of elements.
         std::vector< std::string > nums;
@@ -152,6 +153,12 @@ int main()
         std::vector< std::string > lrange_cmd_result;
         pipe_replies.get( 4, back_inserter( lrange_cmd_result ) );
 
+        std::cout << "set_cmd_result: " << set_cmd_result << std::endl;
+        std::cout << "get_cmd_result: " << get_cmd_result.value() << std::endl;
+        std::cout << "rpush_cmd_result: " << rpush_cmd_result << std::endl;
+        std::cout << "lrange_cmd_result: " << lrange_cmd_result.size() << std::endl;
+        show_vec( "lrange_cmd_result", lrange_cmd_result );
+
         // ***** Transaction *****
 
         // Create a transaction.
@@ -168,6 +175,11 @@ int main()
         std::vector< OptionalString > mget_cmd_result;
         tx_replies.get( 2, back_inserter( mget_cmd_result ) );
 
+        std::cout << "incr_result0: " << incr_result0 << std::endl;
+        std::cout << "incr_result1: " << incr_result1 << std::endl;
+        show_opt_vec( "mget_cmd_result", mget_cmd_result );
+        redis.del( { "num0", "num1" } );
+
         // ***** Generic Command Interface *****
 
         // There's no *Redis::client_getname* interface.
@@ -175,7 +187,7 @@ int main()
         val = redis.command< OptionalString >( "client", "getname" );
         if ( val )
         {
-            std::cout << *val << std::endl;
+            std::cout << "redis_client_getname:" << *val << std::endl;
         }
 
         // Same as above.
@@ -187,9 +199,14 @@ int main()
         std::vector< std::string > sorted_list;
         redis.command( "sort", "list", "ALPHA", std::back_inserter( sorted_list ) );
 
+        show_vec( "sorted_list", sorted_list );
+
         // Another *Redis::command* to do the same work.
+        sorted_list.clear();
         auto sort_cmd_str = { "sort", "list", "ALPHA" };
         redis.command( sort_cmd_str.begin(), sort_cmd_str.end(), std::back_inserter( sorted_list ) );
+
+        show_vec( "sorted_list", sorted_list );
     }
     catch ( const Error& e )
     {
