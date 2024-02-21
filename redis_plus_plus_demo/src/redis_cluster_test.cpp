@@ -1,28 +1,7 @@
-#include <iostream>
+#include "common.h"
 #include <sw/redis++/redis++.h>
 
 using namespace sw::redis;
-using namespace std;
-
-auto show_vec = []( const std::string& name, const auto& v ) {
-    cout << name + " [ ";
-    for ( const auto& e : v )
-    {
-        cout << e << ", ";
-    }
-    cout << "]";
-    cout << endl << endl;
-};
-
-auto show_map = []( const std::string& name, const auto& m ) {
-    cout << name << " [ ";
-    for ( const auto& e : m )
-    {
-        cout << "(" << e.first << ", " << e.second << "), ";
-    }
-    cout << "]";
-    cout << endl << endl;
-};
 
 int main()
 {
@@ -63,6 +42,7 @@ int main()
 
         std::vector< OptionalString > hash_tag_res;
         redis_cluster.mget( { "key{tag}1", "key{tag}2", "key{tag}3" }, std::back_inserter( hash_tag_res ) );
+        show_opt_vec("hash_tag_res", hash_tag_res );
     }
     catch ( const Error& e )
     {
