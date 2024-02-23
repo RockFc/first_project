@@ -134,7 +134,7 @@ int main()
 
         // ***** Pipeline *****
 
-        // Create a pipeline.
+        // Create a pipeline. pipeline is used to reduce RTT (Round Trip Time), and speed up Redis queries.
         auto pipe = redis.pipeline();
 
         // Send mulitple commands and get all replies.
@@ -160,6 +160,14 @@ int main()
         show_vec( "lrange_cmd_result", lrange_cmd_result );
 
         // ***** Transaction *****
+
+        /*   
+        * Redis 的事务（Transaction）是一组命令的有序执行序列，并且这些命令要么全部执行，要么全部不执行。事务通过 MULTI、EXEC、DISCARD 和 WATCH 这几个命令来实现。
+        * Redis 事务的原子性是基于单个客户端的，也就是说在一个事务中的一系列命令要么全部执行，要么全部不执行，而不是基于多个客户端的。这意味着在一个事务中的命令在执行过程中是不会被其他客户端所干扰的，但并不意味着事务中的命令对其他事务是完全隔离的。
+        * Redis 事务并不支持真正的回滚（rollback）。如果在执行事务期间发生了错误，事务中已经执行的命令不会被回滚。但是，可以通过使用 DISCARD 命令来取消一个事务，该命令会清除事务队列中的所有命令，使事务回到初始状态。
+        * 另外需要注意的是，使用 WATCH 命令可以实现乐观锁机制，以确保在事务执行期间，监视的键没有被其他客户端修改。如果被监视的键在 WATCH 和 EXEC 之间被修改，事务将被取消。
+        * 综上所述，Redis 事务可以保证在单个客户端的一系列命令的原子性，但对于多个客户端之间的并发操作，并不能完全保证。
+        */
 
         // Create a transaction.
         auto tx = redis.transaction();
