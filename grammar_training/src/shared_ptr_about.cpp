@@ -9,19 +9,19 @@ using namespace std;
 void shared_ptr_test()
 {
     std::shared_ptr< int > ptr( new int( 42 ) );
-    std::cout << "Before reset, ptr use count: " << ptr.use_count() << std::endl;  // 1
+    std::cout << "Before ptr reset, ptr use count: " << ptr.use_count() << std::endl;  // 1
     auto ptr2 = ptr;
-    std::cout << "Before reset, ptr use count: " << ptr.use_count() << std::endl;  // 2
+    std::cout << "Before ptr reset, ptr use count: " << ptr.use_count() << std::endl;  // 2
 
     // 引用计数变为 0， 如果 ptr 所指对象无其他引用，则销毁对象 （此处不会销毁）
     ptr.reset();
-    std::cout << "After reset, ptr use count: " << ptr.use_count() << std::endl;                          // 0
-    std::cout << "After reset, ptr2 use count: " << ptr2.use_count() << " *ptr2:" << *ptr2 << std::endl;  // 1 42
+    std::cout << "After ptr reset, ptr use count: " << ptr.use_count() << std::endl;                              // 0
+    std::cout << "Before ptr2 reset, ptr2 use count: " << ptr2.use_count() << "  *ptr2: " << *ptr2 << std::endl;  // 1 42
 
-    // 引用计数变为 0， 如果 ptr 所指对象无其他引用，则销毁对象 (此处会销毁)
+    // 引用计数变为 0， 如果 ptr2 所指对象无其他引用，则销毁对象 (此处会销毁)
     ptr2.reset();
-    std::cout << "ptr2 use count: " << ptr2.use_count() << std::endl;  // 0
-    // std::cout << "*ptr2:" << *ptr2 << std::endl;                       // error
+    std::cout << "After ptr2 reset, ptr2 use count: " << ptr2.use_count() << std::endl;  // 0
+    // std::cout << "*ptr2:" << *ptr2 << std::endl;                                      // error
 }
 
 void work_err()
