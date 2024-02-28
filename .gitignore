@@ -49,3 +49,6 @@ redis_plus_plus_demo/product/
 
 redis_plus_plus_asyn_demo/build/
 redis_plus_plus_asyn_demo/product/
+
+grammar_training/build/
+grammar_training/product/
