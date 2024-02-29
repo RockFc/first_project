@@ -2,9 +2,9 @@
 
 using namespace std;
 
-auto show_vec = []( const std::string& name, const auto& v ) {
+auto show_vec = [](const std::string& name, const auto& v) {
     cout << name + " [ ";
-    for ( const auto& e : v )
+    for (const auto& e : v)
     {
         cout << e << ", ";
     }
@@ -12,9 +12,9 @@ auto show_vec = []( const std::string& name, const auto& v ) {
     cout << endl << endl;
 };
 
-auto show_map = []( const std::string& name, const auto& m ) {
+auto show_map = [](const std::string& name, const auto& m) {
     cout << name << " [ ";
-    for ( const auto& e : m )
+    for (const auto& e : m)
     {
         cout << "(" << e.first << ", " << e.second << "), ";
     }
@@ -22,9 +22,9 @@ auto show_map = []( const std::string& name, const auto& m ) {
     cout << endl << endl;
 };
 
-auto show_map_17 = []( const std::string& name, const auto& m ) {
+auto show_map_17 = [](const std::string& name, const auto& m) {
     cout << name << " [ ";
-    for ( const auto& [ f, s ] : m )
+    for (const auto& [ f, s ] : m)
     {
         cout << "(" << f << ", " << s << "), ";
     }
@@ -32,11 +32,11 @@ auto show_map_17 = []( const std::string& name, const auto& m ) {
     cout << endl << endl;
 };
 
-auto show_opt_vec = []( const std::string& name, const auto& v ) {
+auto show_opt_vec = [](const std::string& name, const auto& v) {
     cout << name + " [ ";
-    for ( const auto& e : v )
+    for (const auto& e : v)
     {
-        if ( e )
+        if (e)
         {
             cout << *e << ", ";
         }

@@ -1,21 +1,23 @@
 
-#include <unistd.h>
 #include <atomic>
+#include <unistd.h>
 
-#include <ananas/net/Connection.h>
 #include <ananas/net/Application.h>
+#include <ananas/net/Connection.h>
 #include <ananas/util/Logger.h>
 
-std::shared_ptr<ananas::Logger> logger;
+std::shared_ptr< ananas::Logger > logger;
 
-size_t OnMessage(ananas::Connection* conn, const char* data, size_t len) {
+size_t OnMessage(ananas::Connection* conn, const char* data, size_t len)
+{
     // echo package
     std::string rsp(data, len);
     conn->SendPacket(rsp.data(), rsp.size());
     return len;
 }
 
-void OnNewConnection(ananas::Connection* conn) {
+void OnNewConnection(ananas::Connection* conn)
+{
     using ananas::Connection;
 
     conn->SetOnMessage(OnMessage);
@@ -24,11 +26,11 @@ void OnNewConnection(ananas::Connection* conn) {
     });
 }
 
-
-int main(int ac, char* av[]) {
+int main(int ac, char* av[])
+{
     size_t workers = 1;
     if (ac > 1)
-        workers = (size_t)std::stoi(av[1]);
+        workers = ( size_t )std::stoi(av[ 1 ]);
 
     ananas::LogManager::Instance().Start();
     logger = ananas::LogManager::Instance().CreateLog(logALL, logALL, "logger_server_test");
