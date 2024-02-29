@@ -55,3 +55,6 @@ grammar_training/product/
 
 ananas_demo/build/
 ananas_demo/product/
+
+protobuf_demo/build/
+protobuf_demo/product/
