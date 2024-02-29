@@ -1,9 +1,13 @@
 
-#include <atomic>
+#include <sstream>
 #include <iostream>
 #include <unistd.h>
+#include <thread>
+#include <cstdlib>
 
 #include <ananas/util/ThreadPool.h>
+#include "common.h"
+
 
 int getMoney(const std::string& name)
 {
@@ -18,6 +22,7 @@ std::string getInfo(int year, const std::string& city)
 void test_thread_pool()
 {
     ananas::ThreadPool pool;
+    pool.SetNumOfThreads(4);
 
     pool.Execute(getMoney, "mahuateng").Then([](int money) {
         std::cout << "mahuateng has money " << money << std::endl;
@@ -31,10 +36,21 @@ void test_thread_pool()
     pool.Execute(::sleep, 1);
 
     pool.Execute([]() {
+        show_thread_info();
             std::cout << "hello thread pool!" << std::endl;
         })
         .Then([]() {
+            show_thread_info();
             std::cout << "hello thread pool again!" << std::endl;
+        });
+
+        pool.Execute([]() {
+        show_thread_info();
+            std::cout << "hello rock!" << std::endl;
+        })
+        .Then([]() {
+            show_thread_info();
+            std::cout << "hello rock again!" << std::endl;
         });
 
     sleep(5);
