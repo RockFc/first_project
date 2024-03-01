@@ -1,13 +1,15 @@
 
-#include <sstream>
-#include <iostream>
-#include <unistd.h>
-#include <thread>
+#include "ananas/util/Logger.h"
+#include "ananas/util/ThreadPool.h"
+#include "ananas/util/TimeUtil.h"
 #include <cstdlib>
+#include <iostream>
+#include <sstream>
+#include <sys/syscall.h>
+#include <thread>
+#include <unistd.h>
 
-#include <ananas/util/ThreadPool.h>
 #include "common.h"
-
 
 int getMoney(const std::string& name)
 {
@@ -36,7 +38,7 @@ void test_thread_pool()
     pool.Execute(::sleep, 1);
 
     pool.Execute([]() {
-        show_thread_info();
+            show_thread_info();
             std::cout << "hello thread pool!" << std::endl;
         })
         .Then([]() {
@@ -44,8 +46,8 @@ void test_thread_pool()
             std::cout << "hello thread pool again!" << std::endl;
         });
 
-        pool.Execute([]() {
-        show_thread_info();
+    pool.Execute([]() {
+            show_thread_info();
             std::cout << "hello rock!" << std::endl;
         })
         .Then([]() {
@@ -58,9 +60,31 @@ void test_thread_pool()
     pool.JoinAll();
 }
 
+void test_log()
+{
+    ananas::LogManager::Instance().Start();
+    // auto log = ananas::LogManager::Instance().CreateLog(logDEBUG, logConsole);
+    // auto log = ananas::LogManager::Instance().CreateLog(logINFO, logConsole);
+    auto log = ananas::LogManager::Instance().CreateLog(logALL, logConsole);
+    std::cout << "getpid()" << getpid() << std::endl;
+    std::cout << "this_thread::get_id=" << std::this_thread::get_id() << std::endl;
+    // syscall(SYS_gettid);
+    std::cout << "syscall(SYS_gettid)=" << syscall(SYS_gettid) << std::endl;
+
+    DBG(log) << "Hello ananas, I am debug log!!!";
+    INF(log) << "Hello ananas, I am info log!!!";
+    WRN(log) << "Hello ananas, I am warning log!!!";
+    ERR(log) << "Hello ananas, I am err log!!!";
+
+    ananas::LogManager::Instance().Stop();
+}
+
 int main(int ac, char* av[])
 {
 
     test_thread_pool();
+
+    test_log();
+
     return 0;
 }
