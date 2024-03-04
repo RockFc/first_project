@@ -65,7 +65,8 @@ void test_log()
     ananas::LogManager::Instance().Start();
     // auto log = ananas::LogManager::Instance().CreateLog(logDEBUG, logConsole);
     // auto log = ananas::LogManager::Instance().CreateLog(logINFO, logConsole);
-    auto log = ananas::LogManager::Instance().CreateLog(logALL, logConsole);
+    // auto log = ananas::LogManager::Instance().CreateLog(logALL, logConsole);
+    auto log = ananas::LogManager::Instance().CreateLog(logALL, logFile, "../log");
     std::cout << "getpid()" << getpid() << std::endl;
     std::cout << "this_thread::get_id=" << std::this_thread::get_id() << std::endl;
     // syscall(SYS_gettid);
@@ -79,12 +80,41 @@ void test_log()
     ananas::LogManager::Instance().Stop();
 }
 
+void test_log_in_thred()
+{
+    ananas::ThreadPool pool;
+    pool.SetNumOfThreads(4);
+
+    ananas::LogManager::Instance().Start();
+    // auto log = ananas::LogManager::Instance().CreateLog(logALL, logConsole);
+    auto log = ananas::LogManager::Instance().CreateLog(logALL, logFile, "../log");
+
+       pool.Execute([log]() {
+            DBG(log) << "I am debug log!!! I am in child thread.";
+            sleep(1);
+        })
+        .Then([log]() {
+            INF(log) << "I am info log!!! I and debug log are in the same thread.";
+        });
+
+    pool.Execute([log]() {
+        WRN(log) << "I am warning log!!! I am in child thread.";
+    });
+    
+    ERR(log) << "I am err log!!! I am in main thread.";
+
+    sleep(3);
+    ananas::LogManager::Instance().Stop();
+}
+
 int main(int ac, char* av[])
 {
 
-    test_thread_pool();
+    // test_thread_pool();
 
-    test_log();
+    // test_log();
+
+    test_log_in_thred();
 
     return 0;
 }
