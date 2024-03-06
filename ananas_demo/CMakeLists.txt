@@ -27,10 +27,16 @@ include_directories(${LLHTTP_INCLUDE_DIR})
 
 # 指定第三方库路径
 set(LLHTTP_LIB /workspace/git-code/ananas/build/_deps/llhttp-build/libllhttp.a)
-# link_directories(${LLHTTP_LIB})
+
+# 指定protobuf库路径
+set(PROTOBUF_LIB /usr/lib/aarch64-linux-gnu/libprotobuf.a)
+
+# 指定 git 代码路径
+set (GIT_CODE /workspace/git-code)
+include_directories(${GIT_CODE})
 
 # 指定 ananas 头文件路径
-set (ANANAS_INCLUDE_DIR /workspace/git-code)
+set (ANANAS_INCLUDE_DIR /workspace/git-code/ananas)
 include_directories(${ANANAS_INCLUDE_DIR})
 message(STATUS "ANANAS_INCLUDE_DIR header path: ${ANANAS_INCLUDE_DIR}")
 
@@ -38,6 +44,17 @@ message(STATUS "ANANAS_INCLUDE_DIR header path: ${ANANAS_INCLUDE_DIR}")
 set(ANANAS_UTIL_LIB /workspace/git-code/ananas/bin/libananas_util.a)
 set(ANANAS_NET_LIB /workspace/git-code/ananas/bin/libananas_net.a)
 set(ANANAS_RPC_LIB /workspace/git-code/ananas/bin/libananas_rpc.a)
+
+# 指定 ananas pb 生成文件路径
+set(ANANAS_PB_GEN_DIR /workspace/git-code/ananas/build)
+include_directories(${ANANAS_PB_GEN_DIR})
+
+# 指定 业务pb 生成文件路径
+set(PB_GEN_DIR /workspace/git-code/first_project/protobuf_demo/product/proto)
+include_directories(${PB_GEN_DIR})
+# 指定 pb 库的路径
+set(PB_LIB /workspace/git-code/first_project/protobuf_demo/product/lib/libproto_lib.a)
+
 
 # 添加头文件路径
 include_directories(
