@@ -58,3 +58,6 @@ ananas_demo/product/
 
 protobuf_demo/build/
 protobuf_demo/product/
+
+boost_asio_demo/build/
+boost_asio_demo/product/
