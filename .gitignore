@@ -61,3 +61,6 @@ protobuf_demo/product/
 
 boost_asio_demo/build/
 boost_asio_demo/product/
+
+modern_cpp_kafka_demo/build/
+modern_cpp_kafka_demo/product/

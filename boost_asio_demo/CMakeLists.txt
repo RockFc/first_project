@@ -2,12 +2,12 @@
 # 最低版本需求
 cmake_minimum_required(VERSION 3.12)
 
-set (PROJECT_NAME boost_asio_demo)
-PROJECT(${PROJECT_NAME})
-
 # 设置 C++ 标准
 set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
+set (PROJECT_NAME boost_asio_demo)
+PROJECT(${PROJECT_NAME})
 
 # 查找依赖
 # 查找 Boost 库
