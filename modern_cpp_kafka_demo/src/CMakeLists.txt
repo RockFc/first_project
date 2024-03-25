@@ -1,3 +1,6 @@
 
-add_executable(cpp_kafka_test cpp_kafka_test.cpp)
-target_link_libraries(cpp_kafka_test PRIVATE ${LIBRDKAFKA_LIBRARY_LIB})
+add_executable(kafka_producer_test cpp_kafka_producer_test.cpp)
+target_link_libraries(kafka_producer_test PRIVATE ${LIBRDKAFKA_LIBRARY_LIB})
+
+add_executable(kafka_consumer_test cpp_kafka_consumer_test.cpp)
+target_link_libraries(kafka_consumer_test PRIVATE ${LIBRDKAFKA_LIBRARY_LIB})
