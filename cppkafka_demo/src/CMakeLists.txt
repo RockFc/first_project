@@ -1,0 +1,6 @@
+
+add_executable(kafka_producer_test cpp_kafka_producer_test.cpp)
+target_link_libraries(kafka_producer_test CppKafka::cppkafka Boost::program_options)
+
+add_executable(kafka_consumer_test cpp_kafka_consumer_test.cpp)
+target_link_libraries(kafka_consumer_test CppKafka::cppkafka Boost::program_options)
