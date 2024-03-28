@@ -4,3 +4,9 @@ target_link_libraries(kafka_producer_test PRIVATE ${LIBRDKAFKA_LIBRARY_LIB})
 
 add_executable(kafka_consumer_test cpp_kafka_consumer_test.cpp)
 target_link_libraries(kafka_consumer_test PRIVATE ${LIBRDKAFKA_LIBRARY_LIB})
+
+add_executable(kafka_producer_test_pro cpp_kafka_producer_test_pro.cpp)
+target_link_libraries(kafka_producer_test_pro PRIVATE ${LIBRDKAFKA_LIBRARY_LIB})
+
+add_executable(kafka_consumer_test_pro cpp_kafka_consumer_test_pro.cpp)
+target_link_libraries(kafka_consumer_test_pro PRIVATE ${LIBRDKAFKA_LIBRARY_LIB})
