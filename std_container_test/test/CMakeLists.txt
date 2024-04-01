@@ -13,3 +13,6 @@ target_link_libraries(container_test_1 gtest gtest_main ${CMAKE_THREAD_LIBS_INIT
 
 add_executable(set_vec_mem set_vector_mem.cpp ${src})
 target_link_libraries(set_vec_mem gtest gtest_main ${CMAKE_THREAD_LIBS_INIT}) 
+
+add_executable(to_string_test to_string_test.cpp ${src})
+target_link_libraries(to_string_test ${CMAKE_THREAD_LIBS_INIT}) 
