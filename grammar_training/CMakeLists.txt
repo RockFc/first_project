@@ -1,9 +1,14 @@
 
 # 最低版本需求
-cmake_minimum_required(VERSION 3.0)
+cmake_minimum_required(VERSION 3.12)
 
 # 工程名
 set (PROJECT_NAME cpp_grammar_test)
+
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED True)
+set(CMAKE_CXX_EXTENSIONS OFF)  # 禁用编译器特定的扩展
+
 PROJECT(${PROJECT_NAME})
 
 # 设置option开关默认值
