@@ -24,13 +24,15 @@ link_directories(
 # 指定 hiredis 库的路径
 set(HIREDIS_LIB /usr/local/lib/libhiredis.so)
 
+
 # 指定 redis++ 头文件路径
-set (REDIS_PLUS_PLUS_INCLUDE_DIR /workspace/git-code/redis-plus-plus/src)
+set (REDIS_PLUS_PLUS_INCLUDE_DIR /workspace/git-code/redis-plus-plus-asyn/src)
 include_directories(${REDIS_PLUS_PLUS_INCLUDE_DIR})
+
 message(STATUS "redis-plus-plus header path: ${REDIS_PLUS_PLUS_INCLUDE_DIR}")
 
 # 指定 redis++ 库的路径
-set(REDIS_PLUS_PLUS_LIB /workspace/git-code/redis-plus-plus/build/libredis++.so)
+set(REDIS_PLUS_PLUS_LIB /workspace/git-code/redis-plus-plus-asyn/build/libredis++.so)
 
 # 添加头文件路径
 include_directories(

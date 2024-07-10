@@ -3,7 +3,7 @@
 cmake_minimum_required(VERSION 3.12)
 
 # 工程名
-set (PROJECT_NAME redis_p_p_demo)
+set (PROJECT_NAME rpc_demo)
 PROJECT(${PROJECT_NAME})
 
 # 设置option开关默认值
@@ -21,17 +21,6 @@ link_directories(
     /usr/local/lib
     )
 
-# 指定 hiredis 库的路径
-set(HIREDIS_LIB /usr/local/lib/libhiredis.so)
-
-# 指定 redis++ 头文件路径
-set (REDIS_PLUS_PLUS_INCLUDE_DIR /workspace/git-code/redis-plus-plus/src)
-include_directories(${REDIS_PLUS_PLUS_INCLUDE_DIR})
-message(STATUS "redis-plus-plus header path: ${REDIS_PLUS_PLUS_INCLUDE_DIR}")
-
-# 指定 redis++ 库的路径
-set(REDIS_PLUS_PLUS_LIB /workspace/git-code/redis-plus-plus/build/libredis++.so)
-
 # 添加头文件路径
 include_directories(
     ${PROJECT_SOURCE_DIR})
@@ -46,9 +35,8 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -fexceptions")
 set (EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/product/bin)
 set (LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/product/lib)
 
-# <---------- set c++ standard ------------->
-# NOTE: you must build redis-plus-plus and your application code with the same standard.
-set(CMAKE_CXX_STANDARD 17)
+#设置C++标准
+set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 #打印环境信息
@@ -57,4 +45,24 @@ message("工程目录: " ${PROJECT_SOURCE_DIR})
 message("编译后可执行程序目录: " ${EXECUTABLE_OUTPUT_PATH})
 message("编译后库程序文件目录: " ${LIBRARY_OUTPUT_PATH})
 
-add_subdirectory(src)
+
+# 查找 Protobuf 库
+find_package(Protobuf REQUIRED)
+
+# 设置 .proto 文件所在文件夹
+set(PROTO_DIR ${CMAKE_CURRENT_SOURCE_DIR}/src_proto)
+
+# 查找 .proto 文件
+file(GLOB PROTO_FILES "${PROTO_DIR}/*.proto")
+
+# 设置生成的 Protocol Buffers C++ 文件输出路径
+set(PROTO_OUTPUT_DIR ${CMAKE_CURRENT_SOURCE_DIR}/product/proto)
+
+# 创建输出文件夹
+file(MAKE_DIRECTORY ${PROTO_OUTPUT_DIR})
+
+# 生成 Protobuf 文件
+protobuf_generate_cpp(PROTO_SRCS PROTO_HDRS ${PROTO_FILES} PROTOC_OUT_DIR ${PROTO_OUTPUT_DIR})
+
+# 创建静态库
+add_library(proto_lib STATIC ${PROTO_SRCS} ${PROTO_HDRS})

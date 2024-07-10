@@ -1,13 +1,14 @@
 
 # 最低版本需求
-cmake_minimum_required(VERSION 3.0)
-
-# 设置 C++ 标准
-set(CMAKE_CXX_STANDARD 17)
-set(CMAKE_CXX_STANDARD_REQUIRED ON)
+cmake_minimum_required(VERSION 3.12)
 
 # 工程名
-set (PROJECT_NAME std_container_test)
+set (PROJECT_NAME cpp_grammar_test)
+
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED True)
+set(CMAKE_CXX_EXTENSIONS OFF)  # 禁用编译器特定的扩展
+
 PROJECT(${PROJECT_NAME})
 
 # 设置option开关默认值
@@ -31,7 +32,7 @@ link_directories(
 
 #设置编译选项
 set(CMAKE_C_FLAGS   "${CMAKE_C_FLAGS}   -Wall -fPIC -pipe -std=gnu90")
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -fPIC -pipe -std=gnu++14 -lpthread -fno-exceptions -Wno-invalid-offsetof")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -fPIC -pipe -std=gnu++14 -lpthread -fno-exceptions -Wno-invalid-offsetof -fexceptions")
 
 # gcov 编译选项
 if (ENABLE_GCOV)
@@ -76,5 +77,5 @@ message("ENABLE_ASAN: " ${ENABLE_ASAN})
 message("ASAN_TEST: " ${ASAN_TEST})
 message("VALGRIND_TEST: " ${VALGRIND_TEST})
 
-# add_subdirectory(src)
-add_subdirectory(test)
+add_subdirectory(src)
+# add_subdirectory(test)

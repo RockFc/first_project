@@ -46,3 +46,24 @@ std_container_test/product/
 
 redis_plus_plus_demo/build/
 redis_plus_plus_demo/product/
+
+redis_plus_plus_asyn_demo/build/
+redis_plus_plus_asyn_demo/product/
+
+grammar_training/build/
+grammar_training/product/
+
+ananas_demo/build/
+ananas_demo/product/
+
+protobuf_demo/build/
+protobuf_demo/product/
+
+boost_asio_demo/build/
+boost_asio_demo/product/
+
+modern_cpp_kafka_demo/build/
+modern_cpp_kafka_demo/product/
+
+cppkafka_demo/build/
+cppkafka_demo/product/
