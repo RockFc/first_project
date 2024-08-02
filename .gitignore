@@ -67,3 +67,6 @@ modern_cpp_kafka_demo/product/
 
 cppkafka_demo/build/
 cppkafka_demo/product/
+
+workflow_demo/build/
+workflow_demo/product/
