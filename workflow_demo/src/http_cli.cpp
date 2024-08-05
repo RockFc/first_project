@@ -4,53 +4,39 @@
 #include <iostream>
 #include <thread>
 
-
-
-// 回调函数，用于处理 HTTP 响应
-void http_callback(WFHttpTask* task)
+void http_callback(WFHttpTask *task)
 {
-    protocol::HttpResponse* resp = task->get_resp();
-    const void*             body;
-    size_t                  body_len;
-    resp->get_parsed_body(&body, &body_len);
+     protocol::HttpRequest* req = task->get_req();
+    protocol::HttpResponse *resp = task->get_resp();
 
-    protocol::HttpRequest* req = task->get_req();
-
-    std::cout << req->get_request_uri() << " HTTP Response:" << std::endl;
-    std::cout << std::string(( const char* )body, body_len) << std::endl;
+    if (resp->get_status_code() == std::string("200"))
+    {
+        const void *body;
+        size_t body_len;
+        resp->get_parsed_body(&body, &body_len);
+        std::cout << req->get_request_uri() << " Response body: " << std::string((const char *)body, body_len) << std::endl;
+    }
+    else
+    {
+        std::cerr << req->get_request_uri() << " Request failed with status: " << resp->get_status_code() << std::endl;
+    }
 }
 
 int main()
 {
-    // 创建一个 WaitGroup，等待任务完成
-    WFFacilities::WaitGroup wait_group(2);
-
-    // 创建 HTTP GET 请求任务
-    auto task_hello = WFTaskFactory::create_http_task("http://localhost:8888/hello", 0, 0,
-                                                       [ &wait_group ](WFHttpTask* task)
-                                                       {
-                                                           http_callback(task);
-                                                           wait_group.done();
-                                                       });
-
-    // 启动任务
+    const std::string url_prefix = "http://localhost:8888";
+    WFHttpTask *task_hello = WFTaskFactory::create_http_task(url_prefix + "/hello", 0, 0, http_callback);
     task_hello->start();
 
-    // 等待 1 秒
     std::this_thread::sleep_for(std::chrono::seconds(1));
-
-    // 创建 HTTP GET 请求任务
-    auto task_time = WFTaskFactory::create_http_task("http://localhost:8888/time", 0, 0,
-                                                         [ &wait_group ](WFHttpTask* task)
-                                                         {
-                                                             http_callback(task);
-                                                             wait_group.done();
-                                                         });
-    // 启动任务
+    WFHttpTask *task_time = WFTaskFactory::create_http_task(url_prefix + "/time", 0, 0, http_callback);
     task_time->start();
 
-    // 等待任务完成
-    wait_group.wait();
+    std::this_thread::sleep_for(std::chrono::seconds(1));
+    WFHttpTask *task_err = WFTaskFactory::create_http_task(url_prefix + "/unknown", 0, 0, http_callback);
+    task_err->start();
+
+    getchar(); // 保持程序运行等待回调完成
 
     return 0;
 }
