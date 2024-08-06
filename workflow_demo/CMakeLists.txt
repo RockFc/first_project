@@ -23,7 +23,9 @@ link_directories(
 
 # 添加头文件路径
 include_directories(
-    ${PROJECT_SOURCE_DIR})
+    ${PROJECT_SOURCE_DIR}
+    ../../rapidjson/include
+    )
 
 #设置编译选项
 set(CMAKE_C_FLAGS   "${CMAKE_C_FLAGS}   -Wall -fPIC -pipe -std=gnu90")
