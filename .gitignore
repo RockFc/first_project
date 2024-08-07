@@ -72,3 +72,6 @@ workflow_demo/build/
 workflow_demo/product/
 
 ylt_examples/build/
+
+ylt_demo/build/
+ylt_demo/product/
