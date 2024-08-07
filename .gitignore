@@ -70,3 +70,5 @@ cppkafka_demo/product/
 
 workflow_demo/build/
 workflow_demo/product/
+
+ylt_examples/build/
