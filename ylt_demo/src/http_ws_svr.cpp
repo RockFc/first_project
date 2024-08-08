@@ -53,15 +53,18 @@ int main() {
             // error frame
             break;
           }
-          
-          std::this_thread::sleep_for(1s);
-          StatusInfo si(0, "ok");
-          std::string ss;
-          struct_json::to_json(si, ss); // 序列化
-          auto ec = co_await req.get_conn()->write_websocket(ss);
-          if (ec) {
-            break;
-          }
+          // 模拟服务端向客户端推送通知
+          int i = 0;
+          while(true) {
+            co_await async_simple::coro::sleep(1s);
+            StatusInfo si(++i, "ok");
+            std::string ss;
+            struct_json::to_json(si, ss); // 序列化
+            auto ec = co_await req.get_conn()->write_websocket(ss);
+            if (ec) {
+              break;
+            }
+          };
         }
       });
 
