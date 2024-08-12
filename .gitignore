@@ -75,3 +75,6 @@ ylt_examples/build/
 
 ylt_demo/build/
 ylt_demo/product/
+
+srpc_demo/build/
+srpc_demo/product/
