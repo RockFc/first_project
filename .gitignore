@@ -78,3 +78,6 @@ ylt_demo/product/
 
 srpc_demo/build/
 srpc_demo/product/
+
+libhv_demo/build/
+libhv_demo/product/
