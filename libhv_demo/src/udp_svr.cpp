@@ -19,6 +19,7 @@ int main(int argc, char* argv[]) {
         // echo
         printf("< %.*s\n", (int)buf->size(), (char*)buf->data());
         channel->write(buf);
+        
     };
     srv.onWriteComplete = [](const SocketChannelPtr& channel, Buffer* buf) {
         printf("> %.*s\n", (int)buf->size(), (char*)buf->data());

@@ -28,9 +28,15 @@ set (LIBHV_INCLUDE_DIR ${PROJECT_SOURCE_DIR}/../../libhv/build/include)
 # 指定 libhv 库的路径
 set(LIBHV_LIB ${PROJECT_SOURCE_DIR}/../../libhv/build/lib/libhv.so)
 
+# 指定 libmodbus 头文件路径
+set (LIBMODBUS_INCLUDE_DIR ${PROJECT_SOURCE_DIR}/../../libmodbus/build/include)
+# 指定 libmodbus 库的路径
+set(LIBMODBUS_LIB ${PROJECT_SOURCE_DIR}/../../libmodbus/build/lib/libmodbus.so)
+
 # 添加头文件路径
 include_directories(
     ${LIBHV_INCLUDE_DIR}
+    ${LIBMODBUS_INCLUDE_DIR}
     ${PROJECT_SOURCE_DIR})
 
 #设置编译选项
