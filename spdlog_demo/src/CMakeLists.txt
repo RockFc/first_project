@@ -1,0 +1,7 @@
+add_executable(spdlog_sync spdlog_sync.cpp)
+add_executable(spdlog_async spdlog_async.cpp)
+
+
+# 设置编译日志等级
+target_compile_definitions(spdlog_sync PRIVATE SPDLOG_ACTIVE_LEVEL=SPDLOG_LEVEL_INFO)
+target_compile_definitions(spdlog_async PRIVATE SPDLOG_ACTIVE_LEVEL=SPDLOG_LEVEL_DEBUG)
