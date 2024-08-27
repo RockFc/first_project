@@ -41,3 +41,6 @@ target_link_libraries(sizeof_test  ${LIBHV_LIB})
 
 add_executable(threadpool_test threadpool_test.cpp )
 target_link_libraries(threadpool_test  ${LIBHV_LIB})
+
+add_executable(json_test json_test.cpp )
+target_link_libraries(json_test  ${LIBHV_LIB})
