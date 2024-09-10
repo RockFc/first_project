@@ -16,54 +16,70 @@ namespace zeno
 namespace _to_stream_details
 {
 
-template <class T0, class T1, class = void> struct _has_stream_bit_shl : std::false_type
+template <class T0, class T1, class = void>
+struct _has_stream_bit_shl : std::false_type
 {
 };
 
 template <class T0, class T1>
-struct _has_stream_bit_shl<T0, T1, std::void_t<decltype(std::declval<T0>() << std::declval<T1>())>> : std::true_type
-{
-};
-
-template <class T, class = void> struct _has_range_begin_end : std::false_type
-{
-};
-
-template <class T>
-struct _has_range_begin_end<T, std::void_t<decltype(std::begin(std::declval<T>()) != std::end(std::declval<T>()))>>
+struct _has_stream_bit_shl<T0, T1, std::void_t<decltype(std::declval<T0>() << std::declval<T1>())>>
     : std::true_type
 {
 };
 
-template <class T, class = void> struct _has_tuple_size : std::false_type
+template <class T, class = void>
+struct _has_range_begin_end : std::false_type
 {
 };
 
-template <class T> struct _has_tuple_size<T, std::void_t<decltype(std::tuple_size<T>::value)>> : std::true_type
+template <class T>
+struct _has_range_begin_end<
+    T,
+    std::void_t<decltype(std::begin(std::declval<T>()) != std::end(std::declval<T>()))>>
+    : std::true_type
+{
+};
+
+template <class T, class = void>
+struct _has_tuple_size : std::false_type
+{
+};
+
+template <class T>
+struct _has_tuple_size<T, std::void_t<decltype(std::tuple_size<T>::value)>> : std::true_type
 {
 };
 
 struct _to_stream_impl
 {
     template <class Os, class T, std::size_t... Is>
-    static void _helper_tuple_to_stream(Os& os, T const& t, std::string_view fms, std::index_sequence<Is...>)
+    static void
+    _helper_tuple_to_stream(Os& os, T const& t, std::string_view fms, std::index_sequence<Is...>)
     {
         os << '(';
-        (to_stream(os, std::get<0>(t), fms), ..., (os << ' ', to_stream(os, std::get<Is + 1>(t), fms)));
+        (to_stream(os, std::get<0>(t), fms), ...,
+         (os << ' ', to_stream(os, std::get<Is + 1>(t), fms)));
         os << ')';
     }
 
     template <class Os,
               class T,
-              std::enable_if_t<!_has_stream_bit_shl<Os&, T const&>::value && (std::tuple_size<T>::value >= 1), int> = 0>
+              std::enable_if_t<!_has_stream_bit_shl<Os&, T const&>::value
+                                   && (std::tuple_size<T>::value >= 1),
+                               int>
+              = 0>
     static void to_stream(Os& os, T const& t, std::string_view fms)
     {
-        return _helper_tuple_to_stream(os, t, fms, std::make_index_sequence<std::tuple_size_v<T> - 1>{});
+        return _helper_tuple_to_stream(os, t, fms,
+                                       std::make_index_sequence<std::tuple_size_v<T> - 1>{});
     }
 
     template <class Os,
               class T,
-              std::enable_if_t<!_has_stream_bit_shl<Os&, T const&>::value && (std::tuple_size<T>::value == 0), int> = 0>
+              std::enable_if_t<!_has_stream_bit_shl<Os&, T const&>::value
+                                   && (std::tuple_size<T>::value == 0),
+                               int>
+              = 0>
     static void to_stream(Os& os, T const& t, std::string_view fms)
     {
         os << "()";
@@ -71,8 +87,8 @@ struct _to_stream_impl
 
     template <class Os,
               class T,
-              std::enable_if_t<!_has_stream_bit_shl<Os&, T const&>::value && !_has_tuple_size<T>::value
-                                   && _has_range_begin_end<T>::value,
+              std::enable_if_t<!_has_stream_bit_shl<Os&, T const&>::value
+                                   && !_has_tuple_size<T>::value && _has_range_begin_end<T>::value,
                                int>
               = 0>
     static void to_stream(Os& os, T const& t, std::string_view fms)
@@ -93,9 +109,11 @@ struct _to_stream_impl
         os << ']';
     }
 
-    template <class Os,
-              class T,
-              std::enable_if_t<_has_stream_bit_shl<Os&, T const&>::value && !std::is_enum<T>::value, int> = 0>
+    template <
+        class Os,
+        class T,
+        std::enable_if_t<_has_stream_bit_shl<Os&, T const&>::value && !std::is_enum<T>::value, int>
+        = 0>
     static void to_stream(Os& os, T const& t, std::string_view fms)
     {
         auto flgs = os.flags();
@@ -154,12 +172,14 @@ struct _to_stream_impl
         os.flags(flgs);
     }
 
-    template <class Os,
-              class T,
-              std::enable_if_t<std::is_enum<T>::value
-                                   && _has_stream_bit_shl<Os&, typename std::underlying_type<T>::type const&>::value,
-                               int>
-              = 0>
+    template <
+        class Os,
+        class T,
+        std::enable_if_t<
+            std::is_enum<T>::value
+                && _has_stream_bit_shl<Os&, typename std::underlying_type<T>::type const&>::value,
+            int>
+        = 0>
     static void to_stream(Os& os, T const& t, std::string_view fms)
     {
 #ifdef ZENO_ENABLE_MAGICENUM
@@ -172,19 +192,22 @@ struct _to_stream_impl
 
 }  // namespace _to_stream_details
 
-template <class Os, class T> void to_stream(Os& os, T const& t, std::string_view fms)
+template <class Os, class T>
+void to_stream(Os& os, T const& t, std::string_view fms)
 {
     _to_stream_details::_to_stream_impl::to_stream(os, t, fms);
 }
 
-template <class T> std::string to_string(T const& t, std::string_view fms)
+template <class T>
+std::string to_string(T const& t, std::string_view fms)
 {
     std::ostringstream ss;
     to_stream(ss, t, fms);
     return ss.str();
 }
 
-template <class T> std::string to_string(T const& t)
+template <class T>
+std::string to_string(T const& t)
 {
     if constexpr (std::is_convertible_v<T, std::string>)
     {

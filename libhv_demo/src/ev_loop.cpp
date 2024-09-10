@@ -8,7 +8,8 @@ using namespace hv;
 
 static void onTimer(TimerID timerID, int n)
 {
-    printf("tid=%ld timerID=%lu time=%lus n=%d\n", hv_gettid(), ( unsigned long )timerID, ( unsigned long )time(NULL), n);
+    printf("tid=%ld timerID=%lu time=%lus n=%d\n", hv_gettid(), ( unsigned long )timerID,
+           ( unsigned long )time(NULL), n);
 }
 
 int main(int argc, char* argv[])
@@ -17,7 +18,7 @@ int main(int argc, char* argv[])
 
     printf("main tid=%ld\t time=%lus\n", hv_gettid(), ( unsigned long )time(NULL));
 
-    auto loop = std::make_shared< EventLoop >();
+    auto loop = std::make_shared<EventLoop>();
 
     // runEvery 1s
     loop->setInterval(1000, std::bind(onTimer, std::placeholders::_1, 1));
@@ -26,23 +27,27 @@ int main(int argc, char* argv[])
 
     loop->setInterval(4000, std::bind(onTimer, std::placeholders::_1, 4));
 
-    loop->setInterval(4000, [loop]( TimerID timerID ){
-        loop->queueInLoop(
-        [timerID]()
+    loop->setInterval(
+        4000,
+        [loop](TimerID timerID)
         {
-            printf("queueInLoop in timer tid=%ld timerID=%lu  time=%lus\n", hv_gettid(), ( unsigned long )timerID, ( unsigned long )time(NULL));
+            loop->queueInLoop(
+                [timerID]()
+                {
+                    printf("queueInLoop in timer tid=%ld timerID=%lu  time=%lus\n", hv_gettid(),
+                           ( unsigned long )timerID, ( unsigned long )time(NULL));
+                });
+            loop->runInLoop(
+                [timerID]()
+                {
+                    printf("runInLoop in timer tid=%ld timerID=%lu time=%lus\n", hv_gettid(),
+                           ( unsigned long )timerID, ( unsigned long )time(NULL));
+                });
         });
-        loop->runInLoop(
-        [timerID]()
-        {
-            printf("runInLoop in timer tid=%ld timerID=%lu time=%lus\n", hv_gettid(), ( unsigned long )timerID, ( unsigned long )time(NULL));
-        });
-        
-    });
 
     // runAfter 10s
     loop->setTimeout(10000,
-                     [ &loop ](TimerID timerID)
+                     [&loop](TimerID timerID)
                      {
                          loop->stop();
                      });

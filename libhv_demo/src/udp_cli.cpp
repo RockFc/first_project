@@ -10,10 +10,10 @@ int main(int argc, char* argv[])
 
     if (argc < 2)
     {
-        printf("Usage: %s port\n", argv[ 0 ]);
+        printf("Usage: %s port\n", argv[0]);
         return -10;
     }
-    int port = atoi(argv[ 1 ]);
+    int port = atoi(argv[1]);
 
     UdpClient cli;
     int       sockfd = cli.createsocket(port);
@@ -41,10 +41,10 @@ int main(int argc, char* argv[])
 
     // sendto(time) every 3s
     cli.loop()->setInterval(3000,
-                            [ &cli ](TimerID timerID)
+                            [&cli](TimerID timerID)
                             {
-                                char       str[ DATETIME_FMT_BUFLEN ] = { 0 };
-                                datetime_t dt                         = datetime_now();
+                                char       str[DATETIME_FMT_BUFLEN] = {0};
+                                datetime_t dt                       = datetime_now();
                                 datetime_fmt(&dt, str);
                                 cli.sendto(str);
                             });

@@ -1,44 +1,54 @@
 #include "hv/hthread.h"
 #include "hv/htime.h"
 
-HTHREAD_ROUTINE(test_thread1) {
+HTHREAD_ROUTINE(test_thread1)
+{
     int cnt = 10;
-    while (cnt-- > 0) {
+    while (cnt-- > 0)
+    {
         printf("tid=%ld time=%llums\n", hv_gettid(), gettimeofday_ms());
         hv_msleep(100);
     }
     return 0;
 }
 
-class TestThread2 : public HThread {
+class TestThread2 : public HThread
+{
 protected:
-    virtual void run() {
+    virtual void run()
+    {
         int cnt = 10;
-        while (cnt-- > 0) {
+        while (cnt-- > 0)
+        {
             printf("tid=%ld time=%llums\n", hv_gettid(), gettimeofday_ms());
             hv_msleep(100);
         }
     }
 };
 
-class TestThread3 : public HThread {
+class TestThread3 : public HThread
+{
 protected:
-    virtual bool doPrepare() {
+    virtual bool doPrepare()
+    {
         printf("doPrepare\n");
         return true;
     }
 
-    virtual void doTask() {
+    virtual void doTask()
+    {
         printf("tid=%ld time=%llums\n", hv_gettid(), gettimeofday_ms());
     }
 
-    virtual bool doFinish() {
+    virtual bool doFinish()
+    {
         printf("doFinish\n");
         return true;
     }
 };
 
-int main() {
+int main()
+{
     printf("c-style hthread_create\n");
     hthread_t thread1 = hthread_create(test_thread1, NULL);
     hthread_join(thread1);

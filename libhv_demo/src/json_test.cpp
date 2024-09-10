@@ -1,19 +1,19 @@
 #include "hv/json.hpp"
-#include <iostream>
 #include <fstream>
+#include <iostream>
 
 void create_read_write_json()
 {
     // 创建 JSON 对象
     nlohmann::json json_obj;
-    json_obj[ "code" ] = 0;
-    json_obj[ "msg" ]  = "";
+    json_obj["code"] = 0;
+    json_obj["msg"]  = "";
 
     nlohmann::json data_obj;
-    data_obj[ "server_name" ] = "ep";
-    data_obj[ "version" ]     = "0.0.1";
+    data_obj["server_name"] = "ep";
+    data_obj["version"]     = "0.0.1";
 
-    json_obj[ "data" ] = data_obj;
+    json_obj["data"] = data_obj;
 
     // 输出 JSON 字符串
     std::cout << json_obj.dump(4) << std::endl;  // 4 表示缩进层级
@@ -25,8 +25,8 @@ void create_read_write_json()
     std::cout << "code: " << code << std::endl;
 
     // 修改 JSON 字符串
-    json_obj["code"] = 1;
-    json_obj["msg"]  = "success";
+    json_obj["code"]            = 1;
+    json_obj["msg"]             = "success";
     json_obj["data"]["version"] = "0.0.2";
     std::cout << json_obj.dump(4) << std::endl;
 }
@@ -38,7 +38,8 @@ void read_json_file()
     // 创建一个输入文件流
     std::ifstream inputFile(filename);
     // 检查文件是否打开成功
-    if (!inputFile.is_open()) {
+    if (!inputFile.is_open())
+    {
         std::cerr << "Could not open the file: " << filename << std::endl;
         return;
     }
@@ -69,10 +70,9 @@ void read_json_file()
         {
             std::string version = json_obj["data"]["version"];
             std::cout << "version: " << version << std::endl;
-        }       
-    }   
+        }
+    }
 }
-
 
 int main(int argc, char** argv)
 {
