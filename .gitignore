@@ -84,3 +84,6 @@ libhv_demo/product/
 
 spdlog_demo/build/
 spdlog_demo/product/
+
+asio2_demo/build/
+asio2_demo/product/
