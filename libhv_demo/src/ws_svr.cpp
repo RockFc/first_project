@@ -157,6 +157,7 @@ int main(int argc, char** argv)
                    hv::Json resp;
                    resp["id"]   = "17";
                    resp["name"] = "rock";
+                   ctx->setHeader("Access-Control-Allow-Origin", "*");
                    return ctx->send(resp.dump(2));
                });
 

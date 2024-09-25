@@ -54,7 +54,9 @@ int main()
         {
             crow::json::wvalue x;
             x["hello"] = "world";
-            return crow::response{x};
+            crow::response res{x};
+            res.add_header("Access-Control-Allow-Origin", "*");  // for CORS
+            return res;
         });
 
     CROW_ROUTE(app, "/echo_json")
