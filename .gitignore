@@ -87,3 +87,6 @@ spdlog_demo/product/
 
 asio2_demo/build/
 asio2_demo/product/
+
+crow_demo/build/
+crow_demo/product/
