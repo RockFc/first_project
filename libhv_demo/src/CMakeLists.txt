@@ -44,3 +44,6 @@ target_link_libraries(threadpool_test  ${LIBHV_LIB})
 
 add_executable(json_test json_test.cpp )
 target_link_libraries(json_test  ${LIBHV_LIB})
+
+add_executable(ws_svr ws_svr.cpp )
+target_link_libraries(ws_svr  ${LIBHV_LIB})
