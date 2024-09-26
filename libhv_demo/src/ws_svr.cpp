@@ -158,6 +158,7 @@ int main(int argc, char** argv)
                    resp["id"]   = "17";
                    resp["name"] = "rock";
                    ctx->setHeader("Access-Control-Allow-Origin", "*");
+                   ctx->setHeader("Content-Type", "application/json");
                    return ctx->send(resp.dump(2));
                });
 

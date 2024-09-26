@@ -56,6 +56,8 @@ int main()
             x["hello"] = "world";
             crow::response res{x};
             res.add_header("Access-Control-Allow-Origin", "*");  // for CORS
+            // 默认头信息
+            // res.add_header("Content-Type", "application/json");
             return res;
         });
 
