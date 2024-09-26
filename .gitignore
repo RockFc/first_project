@@ -90,3 +90,6 @@ asio2_demo/product/
 
 crow_demo/build/
 crow_demo/product/
+
+uWebSockets_demo/build/
+uWebSockets_demo/product/
