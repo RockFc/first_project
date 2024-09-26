@@ -38,12 +38,15 @@ set (LIBUSOCKETS_INCLUDE_DIR ${PROJECT_SOURCE_DIR}/../../uWebSockets/uSockets/sr
 set(LIBUSOCKETS_LIB ${PROJECT_SOURCE_DIR}/../../uWebSockets/uSockets/uSockets.a)
 # 指定 uWebSockets 头文件路径
 set (LIBUWEBSOCKETS_INCLUDE_DIR ${PROJECT_SOURCE_DIR}/../../uWebSockets/src)
+# 指定 nlohmann 头文件路径
+set (NLOHMANN_JSON_INCLUDE_DIR ${PROJECT_SOURCE_DIR}/../../json/include)
 
 # 添加头文件路径
 include_directories(
     ${PROJECT_SOURCE_DIR}
     ${LIBUSOCKETS_INCLUDE_DIR}
     ${LIBUWEBSOCKETS_INCLUDE_DIR}
+    ${NLOHMANN_JSON_INCLUDE_DIR}
     )
 
 #设置输出文件路径

@@ -66,6 +66,7 @@ int main()
                 auto x = crow::json::load(req.body);
                 if (!x)
                     return crow::response(400);
+                // crow 内置json 不支持类似于 dump 的操作，使用不太方便
                 return crow::response{req.body};
             });
 
