@@ -13,6 +13,26 @@ PROJECT(${PROJECT_NAME})
 # 查找 Boost 库
 find_package(Boost 1.54.0 COMPONENTS system REQUIRED)
 
+#包含系统头文件路径
+include_directories(
+    /usr/local/include/
+    /usr/include
+)
+#包含系统库路径
+link_directories(
+    /usr/lib
+    /usr/local/lib
+    )
+
+# 指定 nlohmann 头文件路径
+set (NLOHMANN_JSON_INCLUDE_DIR ${PROJECT_SOURCE_DIR}/../../json/include)
+
+# 添加头文件路径
+include_directories(
+    ${PROJECT_SOURCE_DIR}
+    ${Boost_INCLUDE_DIRS}
+    ${NLOHMANN_JSON_INCLUDE_DIR}
+    )
 
 #设置输出文件路径
 set (EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/product/bin)
