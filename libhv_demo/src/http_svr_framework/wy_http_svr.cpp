@@ -1,4 +1,5 @@
 #include "wy_http_svr.h"
+#include "wy_http_message.h"
 
 namespace wy
 {
@@ -46,7 +47,6 @@ void HttpSvr::register_routes()
                      hv::Json resp;
                      resp["id"]   = "17";
                      resp["name"] = "rock";
-                     ctx->setHeader("Content-Type", "application/json");
                      return ctx->send(resp.dump(2));
                  });
 
