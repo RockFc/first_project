@@ -30,7 +30,6 @@ public:
     uint16_t port();
     void     set_port(uint16_t port);
     void     broadcast(const std::string& msg);
-    void     boradcast(std::shared_ptr<hv::Json> msg);
 
     template <typename Req, typename Rsp>
     void add_http_interface(const http_method&                                              mothod,
