@@ -1,69 +1,34 @@
 #pragma once
 
-#include "hv/json.hpp"
+#include "hv/http_content.h"
 
+namespace wy
+{
 struct HttpMsgBase
 {
-    int msgID;
-
     virtual ~HttpMsgBase() {}
     // 纯虚函数：将对象转换为 JSON
-    virtual hv::Json toJson() const = 0;
+    virtual std::shared_ptr<hv::Json> ToJson() const = 0;
     // 纯虚函数：从 JSON 中构造对象
-    virtual bool fromJson(const hv::Json& json) = 0;
+    virtual bool FromJson(std::shared_ptr<hv::Json> json) = 0;
 };
 
-struct LoginRequestMsg : public HttpMsgBase
+struct LoginReqtMsg : public HttpMsgBase
 {
+    // 业务字段
     std::string username;
     std::string password;
 
-    // 实现 toJson 函数
-    hv::Json toJson() const override
-    {
-        hv::Json json;
-        json["msgID"]    = msgID;
-        json["username"] = username;
-        json["password"] = password;
-        return json;
-    }
-
-    // 实现 fromJson 函数
-    bool fromJson(const hv::Json& json) override
-    {
-        if (json.contains("msgID") && json.contains("username") && json.contains("password"))
-        {
-            msgID    = json["msgID"];
-            username = json["username"];
-            password = json["password"];
-            return true;
-        }
-        return false;
-    }
+    std::shared_ptr<hv::Json> ToJson() const override;
+    bool                      FromJson(std::shared_ptr<hv::Json> json) override;
 };
 
-struct LoginResponseMsg : public HttpMsgBase
+struct LoginRspMsg : public HttpMsgBase
 {
+    // 业务字段
     bool success;
 
-    // 实现 toJson 函数
-    hv::Json toJson() const override
-    {
-        hv::Json json;
-        json["msgID"]   = msgID;
-        json["success"] = success;
-        return json;
-    }
-
-    // 实现 fromJson 函数
-    bool fromJson(const hv::Json& json) override
-    {
-        if (json.contains("msgID") && json.contains("success"))
-        {
-            msgID   = json["msgID"];
-            success = json["success"];
-            return true;
-        }
-        return false;
-    }
+    std::shared_ptr<hv::Json> ToJson() const override;
+    bool                      FromJson(std::shared_ptr<hv::Json> json) override;
 };
+}  // namespace wy

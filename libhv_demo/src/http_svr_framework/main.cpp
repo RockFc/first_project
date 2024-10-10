@@ -1,13 +1,19 @@
+#include "wy_http_business.h"
 #include "wy_http_svr.h"
 
-int main(int argc, char** argv)
+int main()
 {
     HV_MEMCHECK;
+    wy::HttpBusiness business;
+    wy::HttpSvr::Instance().add_http_interface(
+        http_method::HTTP_POST, "/login",
+        std::function<bool(std::shared_ptr<wy::LoginReqtMsg>, std::shared_ptr<wy::LoginRspMsg>)>(
+            std::bind(&wy::HttpBusiness::Login, &business, std::placeholders::_1,
+                      std::placeholders::_2)));
 
-    wy::HttpSvr server;
-    if (0 == server.start())
+    if (0 == wy::HttpSvr::Instance().start())
     {
-        printf("http server start success on %d\n", server.port());
+        printf("http server start success on %d\n", wy::HttpSvr::Instance().port());
     }
     else
     {
