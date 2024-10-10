@@ -8,8 +8,8 @@ bool HttpSvrImp::start()
     // websocket
     register_ws();
 
-    // route
-    register_routes();
+    // static files
+    register_http_static("/", "./html");
 
     // middleware
     m_router.AllowCORS();
@@ -95,37 +95,5 @@ void HttpSvrImp::register_ws()
     {
         printf("onclose: %s\n", channel->peeraddr().c_str());
     };
-}
-
-void HttpSvrImp::register_routes()
-{
-    register_http_static("/", "./html");
-
-    register_http_interface(http_method::HTTP_GET, "/get_json",
-                            [](const HttpContextPtr& ctx)
-                            {
-                                printf("GET /get_json\n");
-                                hv::Json resp;
-                                resp["id"]   = "17";
-                                resp["name"] = "rock";
-                                return ctx->send(resp.dump(2));
-                            });
-
-    register_http_interface(http_method::HTTP_POST, "/echo_json",
-                            [](const HttpContextPtr& ctx)
-                            {
-                                printf("POST /echo_json\n");
-                                hv::Json req;
-                                try
-                                {
-                                    req = hv::Json::parse(ctx->body());
-                                }
-                                catch (const std::exception& e)
-                                {
-                                    ctx->setStatus(HTTP_STATUS_BAD_REQUEST);
-                                    return ctx->send(e.what());
-                                }
-                                return ctx->send(req.dump(2));
-                            });
 }
 }  // namespace wy

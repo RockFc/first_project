@@ -43,11 +43,15 @@ public:
                                     printf("mothod[%d], path[%s]\n", ( int )mothod, path.c_str());
                                     auto req = std::make_shared<Req>();
                                     auto rsp = std::make_shared<Rsp>();
-                                    auto req_json
-                                        = std::make_shared<hv::Json>(hv::Json::parse(ctx->body()));
-                                    printf("ctx->body(): %s\n", ctx->body().c_str());
-                                    printf("req_json: %s\n", req_json->dump(2).c_str());
-                                    req->FromJson(req_json);
+
+                                    if (!ctx->body().empty())
+                                    {
+                                        auto req_json = std::make_shared<hv::Json>(
+                                            hv::Json::parse(ctx->body()));
+                                        printf("ctx->body(): %s\n", ctx->body().c_str());
+                                        printf("req_json: %s\n", req_json->dump(2).c_str());
+                                        req->FromJson(req_json);
+                                    }
 
                                     if (!func(req, rsp))
                                     {
@@ -65,8 +69,6 @@ private:
                                  HttpMethodFunc     func);
     void register_http_static(const std::string& path, const std::string& dir);
     void register_ws();
-    // 所有接口需要在这里注册
-    void register_routes();
 
 private:
     hv::HttpService      m_router;

@@ -31,4 +31,23 @@ struct LoginRspMsg : public HttpMsgBase
     std::shared_ptr<hv::Json> ToJson() const override;
     bool                      FromJson(std::shared_ptr<hv::Json> json) override;
 };
+
+struct EchoMsg : public HttpMsgBase
+{
+    std::string name;
+    uint32_t    id;
+
+    std::shared_ptr<hv::Json> ToJson() const override;
+    bool                      FromJson(std::shared_ptr<hv::Json> json) override;
+};
+
+struct GetJsonMsg : public HttpMsgBase
+{
+    std::string time;
+    uint32_t    id;
+
+    std::shared_ptr<hv::Json> ToJson() const override;
+    bool                      FromJson(std::shared_ptr<hv::Json> json) override;
+};
+
 }  // namespace wy

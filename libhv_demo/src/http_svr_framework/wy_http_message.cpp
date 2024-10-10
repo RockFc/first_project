@@ -37,4 +37,42 @@ bool LoginRspMsg::FromJson(std::shared_ptr<hv::Json> json)
     }
     return false;
 }
+
+std::shared_ptr<hv::Json> EchoMsg::ToJson() const
+{
+    auto json       = std::make_shared<hv::Json>();
+    (*json)["name"] = name;
+    (*json)["id"]   = id;
+    return json;
+}
+bool EchoMsg::FromJson(std::shared_ptr<hv::Json> json)
+{
+    if (json->contains("name") && json->contains("id"))
+    {
+        name = (*json)["name"];
+        id   = (*json)["id"];
+        return true;
+    }
+    return false;
+}
+
+std::shared_ptr<hv::Json> GetJsonMsg::ToJson() const
+{
+    auto json       = std::make_shared<hv::Json>();
+    (*json)["time"] = time;
+    (*json)["id"]   = id;
+    return json;
+}
+
+bool GetJsonMsg::FromJson(std::shared_ptr<hv::Json> json)
+{
+    if (json->contains("time") && json->contains("id"))
+    {
+        time = (*json)["time"];
+        id   = (*json)["id"];
+        return true;
+    }
+    return false;
+}
+
 }  // namespace wy
