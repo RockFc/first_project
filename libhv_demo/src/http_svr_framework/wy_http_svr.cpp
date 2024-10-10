@@ -24,6 +24,7 @@ bool HttpSvrImp::start()
     m_server.service = &m_router;
     m_server.ws      = &m_ws;
     m_server.port    = m_port;
+    m_server.setThreadNum(4);
     return m_server.start();
 }
 
