@@ -44,15 +44,11 @@ void HttpSvrImp::set_port(uint16_t port)
 
 void HttpSvrImp::broadcast(const std::string& msg)
 {
+    std::lock_guard<std::mutex> lock(m_ws_channels_mutex);
     for (auto channel : m_ws_channels)
     {
         channel->send(msg);
     }
-}
-
-void HttpSvrImp::boradcast(std::shared_ptr<hv::Json> msg)
-{
-    return broadcast(msg->dump(2));
 }
 
 void HttpSvrImp::register_http_interface(const http_method& mothod,
@@ -83,17 +79,21 @@ void HttpSvrImp::register_ws()
     // m_ws.setPingInterval(10000);
     m_ws.onopen = [this](const WebSocketChannelPtr& channel, const HttpRequestPtr& req)
     {
+        std::lock_guard<std::mutex> lock(m_ws_channels_mutex);
         m_ws_channels.insert(channel);
-        printf("onopen: GET %s\n", req->Path().c_str());
+        printf("onopen: GET %s, ws_channel_size: %ld\n", req->Path().c_str(), m_ws_channels.size());
     };
     m_ws.onmessage = [](const WebSocketChannelPtr& channel, const std::string& msg)
     {
         printf("onmessage: %s\n", msg.c_str());
         channel->send(msg);
     };
-    m_ws.onclose = [](const WebSocketChannelPtr& channel)
+    m_ws.onclose = [this](const WebSocketChannelPtr& channel)
     {
-        printf("onclose: %s\n", channel->peeraddr().c_str());
+        std::lock_guard<std::mutex> lock(m_ws_channels_mutex);
+        m_ws_channels.erase(channel);
+        printf("onclose: %s, ws_channel_size: %ld\n", channel->peeraddr().c_str(),
+               m_ws_channels.size());
     };
 }
 }  // namespace wy

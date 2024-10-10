@@ -77,6 +77,7 @@ private:
     uint16_t             m_port = 8080;
 
     std::set<WebSocketChannelPtr>         m_ws_channels;
+    std::mutex                            m_ws_channels_mutex;
     std::map<std::string, HttpMethodFunc> m_http_funcs;
 };
 
