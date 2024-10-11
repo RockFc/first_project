@@ -10,6 +10,16 @@ namespace wy
 class HttpBusiness
 {
 public:
+    void Init()
+    {
+        // 建议在业务类中注册Http路由,当然也可在外部（例如main函数中）注册
+        wy::HttpSvr::Instance().RegisterRoute(
+            http_method::HTTP_GET, "/get_json",
+            std::function<bool(std::shared_ptr<wy::GetJsonMsg>, std::shared_ptr<wy::GetJsonMsg>)>(
+                std::bind(&wy::HttpBusiness::GetJson, this, std::placeholders::_1,
+                          std::placeholders::_2)));
+    }
+
     bool Login(std::shared_ptr<LoginReqtMsg> req, std::shared_ptr<LoginRspMsg> rsp)
     {
         if (req->username == "admin" && req->password == "123456")

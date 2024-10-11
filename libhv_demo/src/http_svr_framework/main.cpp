@@ -5,6 +5,7 @@ int main()
 {
     HV_MEMCHECK;
     wy::HttpBusiness business;
+    business.Init();
     wy::HttpSvr::Instance().RegisterRoute(
         http_method::HTTP_POST, "/login",
         std::function<bool(std::shared_ptr<wy::LoginReqtMsg>, std::shared_ptr<wy::LoginRspMsg>)>(
@@ -16,11 +17,11 @@ int main()
         std::function<bool(std::shared_ptr<wy::EchoMsg>, std::shared_ptr<wy::EchoMsg>)>(std::bind(
             &wy::HttpBusiness::Echo, &business, std::placeholders::_1, std::placeholders::_2)));
 
-    wy::HttpSvr::Instance().RegisterRoute(
-        http_method::HTTP_GET, "/get_json",
-        std::function<bool(std::shared_ptr<wy::GetJsonMsg>, std::shared_ptr<wy::GetJsonMsg>)>(
-            std::bind(&wy::HttpBusiness::GetJson, &business, std::placeholders::_1,
-                      std::placeholders::_2)));
+    // wy::HttpSvr::Instance().RegisterRoute(
+    //     http_method::HTTP_GET, "/get_json",
+    //     std::function<bool(std::shared_ptr<wy::GetJsonMsg>, std::shared_ptr<wy::GetJsonMsg>)>(
+    //         std::bind(&wy::HttpBusiness::GetJson, &business, std::placeholders::_1,
+    //                   std::placeholders::_2)));
 
     if (0 == wy::HttpSvr::Instance().Start())
     {
