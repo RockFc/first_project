@@ -3,13 +3,13 @@
 
 namespace wy
 {
-bool HttpSvrImp::start()
+bool HttpSvrImp::Start()
 {
     // websocket
-    register_ws();
+    RegisterWs();
 
     // static files
-    register_http_static("/", "./html");
+    RegisterHttpStatic("/", "./html");
 
     // middleware
     m_router.AllowCORS();
@@ -28,33 +28,33 @@ bool HttpSvrImp::start()
     return m_server.start();
 }
 
-void HttpSvrImp::stop()
+void HttpSvrImp::Stop()
 {
     m_server.stop();
 }
 
-uint16_t HttpSvrImp::port()
+uint16_t HttpSvrImp::Port()
 {
     return m_server.port;
 }
 
-void HttpSvrImp::set_port(uint16_t port)
+void HttpSvrImp::SetPort(uint16_t port)
 {
     m_server.port = port;
 }
 
-void HttpSvrImp::broadcast(const std::string& msg)
+void HttpSvrImp::Broadcast(const std::string& msg)
 {
-    std::lock_guard<std::mutex> lock(m_ws_channels_mutex);
-    for (auto channel : m_ws_channels)
+    std::lock_guard<std::mutex> lock(m_wsChannelsMutex);
+    for (auto channel : m_wsChannels)
     {
         channel->send(msg);
     }
 }
 
-void HttpSvrImp::register_http_interface(const http_method& mothod,
-                                         const std::string& path,
-                                         HttpMethodFunc     func)
+void HttpSvrImp::RegisterHttpInterface(const http_method& mothod,
+                                       const std::string& path,
+                                       HttpMethodFunc     func)
 {
     if (mothod == http_method::HTTP_GET)
     {
@@ -70,19 +70,19 @@ void HttpSvrImp::register_http_interface(const http_method& mothod,
     }
 }
 
-void HttpSvrImp::register_http_static(const std::string& path, const std::string& dir)
+void HttpSvrImp::RegisterHttpStatic(const std::string& path, const std::string& dir)
 {
     m_router.Static(path.c_str(), dir.c_str());
 }
 
-void HttpSvrImp::register_ws()
+void HttpSvrImp::RegisterWs()
 {
     // m_ws.setPingInterval(10000);
     m_ws.onopen = [this](const WebSocketChannelPtr& channel, const HttpRequestPtr& req)
     {
-        std::lock_guard<std::mutex> lock(m_ws_channels_mutex);
-        m_ws_channels.insert(channel);
-        printf("onopen: GET %s, ws_channel_size: %ld\n", req->Path().c_str(), m_ws_channels.size());
+        std::lock_guard<std::mutex> lock(m_wsChannelsMutex);
+        m_wsChannels.insert(channel);
+        printf("onopen: GET %s, ws_channel_size: %ld\n", req->Path().c_str(), m_wsChannels.size());
     };
     m_ws.onmessage = [](const WebSocketChannelPtr& channel, const std::string& msg)
     {
@@ -91,10 +91,10 @@ void HttpSvrImp::register_ws()
     };
     m_ws.onclose = [this](const WebSocketChannelPtr& channel)
     {
-        std::lock_guard<std::mutex> lock(m_ws_channels_mutex);
-        m_ws_channels.erase(channel);
+        std::lock_guard<std::mutex> lock(m_wsChannelsMutex);
+        m_wsChannels.erase(channel);
         printf("onclose: %s, ws_channel_size: %ld\n", channel->peeraddr().c_str(),
-               m_ws_channels.size());
+               m_wsChannels.size());
     };
 }
 }  // namespace wy

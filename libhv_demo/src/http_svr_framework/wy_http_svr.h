@@ -18,56 +18,56 @@ History:
 
 namespace wy
 {
-using HttpMethodFunc = std::function<int(const HttpContextPtr&)>;
 class HttpSvrImp
 {
 public:
     explicit HttpSvrImp(uint16_t port = 8080) : m_port(port){};
     ~HttpSvrImp() = default;
 
-    bool     start();
-    void     stop();
-    uint16_t port();
-    void     set_port(uint16_t port);
-    void     broadcast(const std::string& msg);
+    bool     Start();
+    void     Stop();
+    uint16_t Port();
+    void     SetPort(uint16_t port);
+    void     Broadcast(const std::string& msg);
 
     template <typename Req, typename Rsp>
-    void add_http_interface(const http_method&                                              mothod,
-                            const std::string&                                              path,
-                            std::function<bool(std::shared_ptr<Req>, std::shared_ptr<Rsp>)> func)
+    void AddHttpInterface(const http_method&                                              mothod,
+                          const std::string&                                              path,
+                          std::function<bool(std::shared_ptr<Req>, std::shared_ptr<Rsp>)> func)
     {
-        register_http_interface(mothod, path,
-                                [mothod, path, func](const HttpContextPtr& ctx)
-                                {
-                                    printf("mothod[%d], path[%s]\n", ( int )mothod, path.c_str());
-                                    auto req = std::make_shared<Req>();
-                                    auto rsp = std::make_shared<Rsp>();
+        RegisterHttpInterface(mothod, path,
+                              [mothod, path, func](const HttpContextPtr& ctx)
+                              {
+                                  printf("mothod[%d], path[%s]\n", ( int )mothod, path.c_str());
+                                  auto req = std::make_shared<Req>();
+                                  auto rsp = std::make_shared<Rsp>();
 
-                                    if (!ctx->body().empty())
-                                    {
-                                        auto req_json = std::make_shared<hv::Json>(
-                                            hv::Json::parse(ctx->body()));
-                                        printf("ctx->body(): %s\n", ctx->body().c_str());
-                                        printf("req_json: %s\n", req_json->dump(2).c_str());
-                                        req->FromJson(req_json);
-                                    }
+                                  if (!ctx->body().empty())
+                                  {
+                                      auto req_json = std::make_shared<hv::Json>(
+                                          hv::Json::parse(ctx->body()));
+                                      printf("ctx->body(): %s\n", ctx->body().c_str());
+                                      printf("req_json: %s\n", req_json->dump(2).c_str());
+                                      req->FromJson(req_json);
+                                  }
 
-                                    if (!func(req, rsp))
-                                    {
-                                        ctx->setStatus(HTTP_STATUS_BAD_REQUEST);
-                                        return ctx->send("http interface error");
-                                    }
+                                  if (!func(req, rsp))
+                                  {
+                                      ctx->setStatus(HTTP_STATUS_BAD_REQUEST);
+                                      return ctx->send("http interface error");
+                                  }
 
-                                    return ctx->send(rsp->ToJson()->dump(2));
-                                });
+                                  return ctx->send(rsp->ToJson()->dump(2));
+                              });
     }
 
 private:
-    void register_http_interface(const http_method& mothod,
-                                 const std::string& path,
-                                 HttpMethodFunc     func);
-    void register_http_static(const std::string& path, const std::string& dir);
-    void register_ws();
+    using HttpMethodFunc = std::function<int(const HttpContextPtr&)>;
+
+    void
+    RegisterHttpInterface(const http_method& mothod, const std::string& path, HttpMethodFunc func);
+    void RegisterHttpStatic(const std::string& path, const std::string& dir);
+    void RegisterWs();
 
 private:
     hv::HttpService      m_router;
@@ -75,9 +75,9 @@ private:
     hv::HttpServer       m_server;
     uint16_t             m_port = 8080;
 
-    std::set<WebSocketChannelPtr>         m_ws_channels;
-    std::mutex                            m_ws_channels_mutex;
-    std::map<std::string, HttpMethodFunc> m_http_funcs;
+    std::set<WebSocketChannelPtr>         m_wsChannels;
+    std::mutex                            m_wsChannelsMutex;
+    std::map<std::string, HttpMethodFunc> m_httpFuncs;
 };
 
 class HttpSvr

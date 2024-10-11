@@ -52,7 +52,7 @@ private:
                           [](hv::TimerID)
                           {
                               printf("ontime\n");
-                              wy::HttpSvr::Instance().broadcast("you are logined!");
+                              wy::HttpSvr::Instance().Broadcast("you are logined!");
                           });
 
         // runEvery 5s
@@ -65,7 +65,7 @@ private:
                               datetime_fmt(&dt, str);
                               (*json)["time_str"] = str;
                               (*json)["id"]       = 7;
-                              wy::HttpSvr::Instance().broadcast(json->dump(2));
+                              wy::HttpSvr::Instance().Broadcast(json->dump(2));
                           });
         m_loop_thread.start();
     }
