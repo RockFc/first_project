@@ -6,11 +6,11 @@ int main()
     HV_MEMCHECK;
     wy::HttpBusiness business;
     business.Init();
-    wy::HttpSvr::Instance().RegisterRoute(
-        http_method::HTTP_POST, "/login",
-        std::function<bool(std::shared_ptr<wy::LoginReqtMsg>, std::shared_ptr<wy::LoginRspMsg>)>(
-            std::bind(&wy::HttpBusiness::Login, &business, std::placeholders::_1,
-                      std::placeholders::_2)));
+    // wy::HttpSvr::Instance().RegisterRoute(
+    //     http_method::HTTP_POST, "/login",
+    //     std::function<bool(std::shared_ptr<wy::LoginReqtMsg>, std::shared_ptr<wy::LoginRspMsg>)>(
+    //         std::bind(&wy::HttpBusiness::Login, &business, std::placeholders::_1,
+    //                   std::placeholders::_2)));
 
     wy::HttpSvr::Instance().RegisterRoute(
         http_method::HTTP_POST, "/echo_json",
