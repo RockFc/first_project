@@ -82,7 +82,8 @@ void HttpSvrImp::RegisterWs()
     {
         std::lock_guard<std::mutex> lock(m_wsChannelsMutex);
         m_wsChannels.insert(channel);
-        printf("onopen: GET %s, ws_channel_size: %ld\n", req->Path().c_str(), m_wsChannels.size());
+        printf("onopen: GET %s, %s, ws_channel_size: %ld\n", req->Path().c_str(),
+               channel->peeraddr().c_str(), m_wsChannels.size());
     };
     m_ws.onmessage = [](const WebSocketChannelPtr& channel, const std::string& msg)
     {

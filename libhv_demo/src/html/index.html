@@ -38,15 +38,36 @@
     }
 
     .controls {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
       margin-bottom: 20px;
     }
 
-    input[type="text"] {
-      padding: 10px;
-      width: calc(100% - 120px);
+    .label {
       margin-right: 10px;
+      font-weight: bold;
+    }
+
+    input[type="text"],
+    input[type="url"],
+    select,
+    textarea {
+      padding: 10px;
       border: 1px solid #ccc;
       border-radius: 5px;
+      flex-grow: 1;
+    }
+
+    input[type="url"],
+    select {
+      width: 100%;
+    }
+
+    textarea {
+      width: 100%;
+      height: 100px;
+      resize: none;
     }
 
     button {
@@ -57,6 +78,7 @@
       cursor: pointer;
       border-radius: 5px;
       transition: background-color 0.3s;
+      margin-left: 10px;
     }
 
     button:hover {
@@ -84,18 +106,17 @@
       margin-bottom: 10px;
     }
 
-    textarea {
-      width: 100%;
-      height: 150px;
-      margin-top: 10px;
+    label {
+      display: block;
+      margin-bottom: 5px;
+      font-weight: bold;
     }
   </style>
   <script type="text/javascript">
     let ws;
 
-    // 打开 WebSocket 连接
     function connectWebSocket() {
-      const serverUrl = "ws://127.0.0.1:8080/ws";  // WebSocket 服务地址
+      const serverUrl = "ws://127.0.0.1:8080/ws";
       ws = new WebSocket(serverUrl);
 
       ws.onopen = function () {
@@ -106,7 +127,8 @@
       ws.onmessage = function (event) {
         console.log("接收到 WebSocket 消息: " + event.data);
         const messageBox = document.getElementById("messages");
-        messageBox.value += "WebSocket: " + event.data + "\n";  // 将收到的消息显示到文本区域
+        messageBox.value += "WebSocket: " + event.data + "\n";
+        messageBox.scrollTop = messageBox.scrollHeight;
       };
 
       ws.onclose = function () {
@@ -119,7 +141,6 @@
       };
     }
 
-    // 发送 WebSocket 消息
     function sendMessage() {
       const message = document.getElementById("inputMessage").value;
       if (ws && ws.readyState === WebSocket.OPEN) {
@@ -130,14 +151,12 @@
       }
     }
 
-    // 关闭 WebSocket 连接
     function closeWebSocket() {
       if (ws) {
         ws.close();
       }
     }
 
-    // 显示 HTTP 请求信息
     function showHttpInfo(method, url, body, data) {
       const infoBox = document.getElementById("httpInfo");
       infoBox.innerHTML = `
@@ -148,24 +167,22 @@
       `;
     }
 
-    // 发送 GET 请求（无查询参数）
     function sendGetRequest() {
-      const url = "http://127.0.0.1:8080/get_json";
+      const url = document.getElementById("getUrl").value;
 
       fetch(url)
         .then(response => response.json())
         .then(data => {
-          showHttpInfo("GET", url, null, data);  // 将 params 替换为 null
+          showHttpInfo("GET", url, null, data);
         })
         .catch(error => {
           console.error("GET 请求错误: " + error);
         });
     }
 
-    // 发送第一个 POST 请求
-    function sendFirstPostRequest() {
-      const url = "http://127.0.0.1:8080/echo_json";  // 替换为你的 HTTP API 地址
-      const postData = { name: "wy", id: 123 };
+    function sendPostRequest() {
+      const url = document.getElementById("postUrl").value;
+      const postData = JSON.parse(document.getElementById("postBody").value);
 
       fetch(url, {
         method: "POST",
@@ -179,29 +196,24 @@
           showHttpInfo("POST", url, postData, data);
         })
         .catch(error => {
-          console.error("POST 1 请求错误: " + error);
+          console.error("POST 请求错误: " + error);
         });
     }
 
-    // 发送第二个 POST 请求
-    function sendSecondPostRequest() {
-      const url = "http://127.0.0.1:8080/login";  // 替换为你的 HTTP API 地址
-      const postData = { username: "admin", password: "123456" };
+    function updatePostBody() {
+      const url = document.getElementById("postUrl").value;
+      const postBody = document.getElementById("postBody");
 
-      fetch(url, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify(postData)
-      })
-        .then(response => response.json())
-        .then(data => {
-          showHttpInfo("POST", url, postData, data);
-        })
-        .catch(error => {
-          console.error("POST 2 请求错误: " + error);
-        });
+      switch (url) {
+        case "http://127.0.0.1:8080/echo_json":
+          postBody.value = JSON.stringify({ "name": "wy", "id": 711 }, null, 2);
+          break;
+        case "http://127.0.0.1:8080/login":
+          postBody.value = JSON.stringify({ "username": "admin", "password": "123456" }, null, 2);
+          break;
+        default:
+          postBody.value = "{}";
+      }
     }
   </script>
 </head>
@@ -227,12 +239,29 @@
     <!-- 消息显示框 -->
     <textarea id="messages" class="messages" readonly></textarea>
 
-    <!-- HTTP 请求按钮 -->
+    <!-- HTTP 请求 -->
     <h2>HTTP 请求</h2>
+
+    <!-- GET 请求 -->
     <div class="controls">
+      <label for="getUrl">GET 请求 URL:</label>
+      <input type="url" id="getUrl" value="http://127.0.0.1:8080/get_json" placeholder="输入 GET 请求 URL">
       <button onclick="sendGetRequest()">发送 GET 请求</button>
-      <button onclick="sendFirstPostRequest()">发送第一个 POST 请求</button>
-      <button onclick="sendSecondPostRequest()">发送第二个 POST 请求</button>
+    </div>
+
+    <!-- POST 请求 -->
+    <div class="controls">
+      <label for="postUrl">POST 请求 URL:</label>
+      <select id="postUrl" onchange="updatePostBody()">
+        <option value="http://127.0.0.1:8080/echo_json">http://127.0.0.1:8080/echo_json</option>
+        <option value="http://127.0.0.1:8080/login">http://127.0.0.1:8080/login</option>
+        <!-- 您可以添加更多的 POST URL 选项 -->
+      </select>
+    </div>
+    <div class="controls">
+      <label for="postBody">POST 请求体:</label>
+      <textarea id="postBody" placeholder="输入 POST 请求体 (JSON 格式)">{ "name": "wy", "id": 711 }</textarea>
+      <button onclick="sendPostRequest()">发送 POST 请求</button>
     </div>
 
     <!-- 显示 HTTP 请求详细信息 -->
