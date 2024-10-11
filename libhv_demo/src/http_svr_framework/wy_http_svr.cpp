@@ -9,7 +9,7 @@ bool HttpSvrImp::Start()
     RegisterWs();
 
     // static files
-    RegisterHttpStatic("/", "./html");
+    RegisterStaticRoute("/", "./html");
 
     // middleware
     m_router.AllowCORS();
@@ -33,7 +33,7 @@ void HttpSvrImp::Stop()
     m_server.stop();
 }
 
-uint16_t HttpSvrImp::Port()
+uint16_t HttpSvrImp::GetPort()
 {
     return m_server.port;
 }
@@ -52,25 +52,25 @@ void HttpSvrImp::Broadcast(const std::string& msg)
     }
 }
 
-void HttpSvrImp::RegisterHttpInterface(const http_method& mothod,
-                                       const std::string& path,
-                                       HttpMethodFunc     func)
+void HttpSvrImp::RegisterHttpRoute(const http_method& method,
+                                   const std::string& path,
+                                   HttpMethodFunc     func)
 {
-    if (mothod == http_method::HTTP_GET)
+    if (method == http_method::HTTP_GET)
     {
         m_router.GET(path.c_str(), func);
     }
-    else if (mothod == http_method::HTTP_POST)
+    else if (method == http_method::HTTP_POST)
     {
         m_router.POST(path.c_str(), func);
     }
     else
     {
-        throw std::runtime_error("mothod not support");
+        throw std::runtime_error("method not support");
     }
 }
 
-void HttpSvrImp::RegisterHttpStatic(const std::string& path, const std::string& dir)
+void HttpSvrImp::RegisterStaticRoute(const std::string& path, const std::string& dir)
 {
     m_router.Static(path.c_str(), dir.c_str());
 }

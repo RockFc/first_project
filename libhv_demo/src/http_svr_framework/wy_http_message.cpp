@@ -10,12 +10,12 @@ std::shared_ptr<hv::Json> LoginReqtMsg::ToJson() const
     return json;
 }
 
-bool LoginReqtMsg::FromJson(std::shared_ptr<hv::Json> json)
+bool LoginReqtMsg::FromJson(const hv::Json& json)
 {
-    if (json->contains("username") && json->contains("password"))
+    if (json.contains("username") && json.contains("password"))
     {
-        username = (*json)["username"];
-        password = (*json)["password"];
+        username = json["username"];
+        password = json["password"];
         return true;
     }
     return false;
@@ -28,11 +28,11 @@ std::shared_ptr<hv::Json> LoginRspMsg::ToJson() const
     return json;
 }
 
-bool LoginRspMsg::FromJson(std::shared_ptr<hv::Json> json)
+bool LoginRspMsg::FromJson(const hv::Json& json)
 {
-    if (json->contains("success"))
+    if (json.contains("success"))
     {
-        success = (*json)["success"];
+        success = json["success"];
         return true;
     }
     return false;
@@ -45,12 +45,12 @@ std::shared_ptr<hv::Json> EchoMsg::ToJson() const
     (*json)["id"]   = id;
     return json;
 }
-bool EchoMsg::FromJson(std::shared_ptr<hv::Json> json)
+bool EchoMsg::FromJson(const hv::Json& json)
 {
-    if (json->contains("name") && json->contains("id"))
+    if (json.contains("name") && json.contains("id"))
     {
-        name = (*json)["name"];
-        id   = (*json)["id"];
+        name = json["name"];
+        id   = json["id"];
         return true;
     }
     return false;
@@ -64,12 +64,12 @@ std::shared_ptr<hv::Json> GetJsonMsg::ToJson() const
     return json;
 }
 
-bool GetJsonMsg::FromJson(std::shared_ptr<hv::Json> json)
+bool GetJsonMsg::FromJson(const hv::Json& json)
 {
-    if (json->contains("time") && json->contains("id"))
+    if (json.contains("time") && json.contains("id"))
     {
-        time = (*json)["time"];
-        id   = (*json)["id"];
+        time = json["time"];
+        id   = json["id"];
         return true;
     }
     return false;

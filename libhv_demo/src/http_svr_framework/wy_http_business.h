@@ -46,7 +46,7 @@ public:
 private:
     void ontime()
     {
-        const hv::EventLoopPtr& loop = m_loop_thread.loop();
+        const hv::EventLoopPtr& loop = m_loopThread.loop();
         // runEvery 2s
         loop->setInterval(2000,
                           [](hv::TimerID)
@@ -67,10 +67,10 @@ private:
                               (*json)["id"]       = 7;
                               wy::HttpSvr::Instance().Broadcast(json->dump(2));
                           });
-        m_loop_thread.start();
+        m_loopThread.start();
     }
 
 private:
-    hv::EventLoopThread m_loop_thread;
+    hv::EventLoopThread m_loopThread;
 };
 }  // namespace wy
