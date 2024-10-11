@@ -10,7 +10,7 @@ namespace wy
 class HttpBusiness
 {
 public:
-    void Init()
+    bool Init()
     {
         // 建议在业务类中注册Http路由,当然也可在外部（例如main函数中）注册
         wy::HttpSvr::Instance().RegisterRoute(
@@ -36,6 +36,18 @@ public:
                 {
                     return GetJson(req, rsp);
                 }));
+
+        // 启动Http服务
+        if (wy::HttpSvr::Instance().Start())
+        {
+            printf("http server start success on %d\n", wy::HttpSvr::Instance().GetPort());
+            return true;
+        }
+        else
+        {
+            printf("http server start failed\n");
+            return false;
+        }
     }
 
     bool Login(std::shared_ptr<LoginReqtMsg> req, std::shared_ptr<LoginRspMsg> rsp)

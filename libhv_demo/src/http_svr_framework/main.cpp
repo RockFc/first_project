@@ -23,15 +23,15 @@ int main()
     //         std::bind(&wy::HttpBusiness::GetJson, &business, std::placeholders::_1,
     //                   std::placeholders::_2)));
 
-    if (0 == wy::HttpSvr::Instance().Start())
-    {
-        printf("http server start success on %d\n", wy::HttpSvr::Instance().GetPort());
-    }
-    else
-    {
-        printf("http server start failed\n");
-        return -1;
-    }
+    // if (wy::HttpSvr::Instance().Start())
+    // {
+    //     printf("http server start success on %d\n", wy::HttpSvr::Instance().GetPort());
+    // }
+    // else
+    // {
+    //     printf("http server start failed\n");
+    //     return -1;
+    // }
 
     while (getchar() != '\n')
         ;

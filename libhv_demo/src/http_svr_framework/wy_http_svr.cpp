@@ -25,7 +25,7 @@ bool HttpSvrImp::Start()
     m_server.ws      = &m_ws;
     m_server.port    = m_port;
     m_server.setThreadNum(4);
-    return m_server.start();
+    return 0 == m_server.start() ? true : false;
 }
 
 void HttpSvrImp::Stop()
