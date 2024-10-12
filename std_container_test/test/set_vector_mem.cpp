@@ -15,7 +15,7 @@ public:
     void static TearDownCase()
     {
         struct rusage r_usage;
-        getrusage( RUSAGE_SELF, &r_usage );
+        getrusage(RUSAGE_SELF, &r_usage);
         std::cout << "TearDownCase  Memory usage: " << r_usage.ru_maxrss << " KB" << std::endl;
     }
 
@@ -25,7 +25,7 @@ protected:
     virtual void TearDown()
     {
         struct rusage r_usage;
-        getrusage( RUSAGE_SELF, &r_usage );
+        getrusage(RUSAGE_SELF, &r_usage);
         std::cout << "TearDown  Memory usage: " << r_usage.ru_maxrss << " KB" << std::endl;
     }
 };
@@ -58,18 +58,18 @@ const size_t LOOP_CNT = 1000000;
 //     }
 // }
 
-std::vector< std::set< std::string > > g_vs;
+std::vector<std::set<std::string>> g_vs;
 
-TEST_F( ContainerTest, vector_set_add_1 )
+TEST_F(ContainerTest, vector_set_add_1)
 {
-    std::set< std::string >* p_s = new std::set< std::string >;
-    for ( size_t i = 0; i < LOOP_CNT; i++ )
+    std::set<std::string>* p_s = new std::set<std::string>;
+    for (size_t i = 0; i < LOOP_CNT; i++)
     {
-        p_s->insert( std::to_string( i ) );
-        if ( i % 10 == 0 )
+        p_s->insert(std::to_string(i));
+        if (i % 10 == 0)
         {
-            g_vs.push_back( *p_s );
-            p_s = new std::set< std::string >;
+            g_vs.push_back(*p_s);
+            p_s = new std::set<std::string>;
         }
     }
 }

@@ -33,7 +33,7 @@ AlwaysBreakAfterReturnType:    None
 # 总是在多行string字面量前换行
 AlwaysBreakBeforeMultilineStrings:    false
 # 总是在template声明后换行
-AlwaysBreakTemplateDeclarations:    false
+AlwaysBreakTemplateDeclarations:    true
 # false表示函数实参要么都在同一行，要么都各自一行
 BinPackArguments:    true
 # false表示所有形参要么都在同一行，要么都各自一行
@@ -74,7 +74,7 @@ BreakBeforeTernaryOperators:    true
 # 在构造函数的初始化列表的逗号前换行
 BreakConstructorInitializersBeforeComma:    false
 # 每行字符的限制，0表示没有限制
-ColumnLimit:    200
+ColumnLimit:    100
 # 描述具有特殊意义的注释的正则表达式，它不应该被分割为多行或以其它方式改变
 CommentPragmas:    '^ IWYU pragma:'
 # 构造函数的初始化列表要么都在同一行，要么都各自一行
@@ -84,7 +84,7 @@ ConstructorInitializerIndentWidth:    4
 # 延续的行的缩进宽度
 ContinuationIndentWidth:    4
 # 去除C++11的列表初始化的大括号{后和}前的空格
-Cpp11BracedListStyle:    false
+Cpp11BracedListStyle:    true
 # 继承最常用的指针和引用的对齐方式
 DerivePointerAlignment:    false
 # 关闭格式化
@@ -117,7 +117,7 @@ MacroBlockEnd:    ''
 # 连续空行的最大数量
 MaxEmptyLinesToKeep:    1
 # 命名空间的缩进: None, Inner(缩进嵌套的命名空间中的内容), All
-NamespaceIndentation:    Inner
+NamespaceIndentation:    None
 # 使用ObjC块时缩进宽度
 ObjCBlockIndentWidth:    4
 # 在ObjC的@property后添加一个空格
@@ -153,7 +153,7 @@ SpaceInEmptyParentheses:    false
 # 在尾随的评论前添加的空格数(只适用于//)
 SpacesBeforeTrailingComments:    2
 # 在尖括号的<后和>前添加空格
-SpacesInAngles:    true
+SpacesInAngles:    false
 # 在容器(ObjC和JavaScript的数组和字典等)字面量中添加空格
 SpacesInContainerLiterals:    true
 # 在C风格类型转换的括号中添加空格
@@ -161,7 +161,7 @@ SpacesInCStyleCastParentheses:    true
 # 在圆括号的(后和)前添加空格
 SpacesInParentheses:    false
 # 在方括号的[后和]前添加空格，lamda表达式和未指明大小的数组的声明不受影响
-SpacesInSquareBrackets:    true
+SpacesInSquareBrackets:    false
 # 标准: Cpp03, Cpp11, Auto
 Standard:    Cpp11
 # tab宽度

@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>WebSocket 和 HTTP 请求示例</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f4f4f4;
+      margin: 0;
+      padding: 20px;
+    }
+
+    h1 {
+      text-align: center;
+    }
+
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 20px;
+      background-color: #fff;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .status {
+      color: green;
+      font-weight: bold;
+    }
+
+    .messages {
+      width: 100%;
+      height: 150px;
+      margin-top: 10px;
+    }
+
+    .controls {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 20px;
+    }
+
+    .label {
+      margin-right: 10px;
+      font-weight: bold;
+    }
+
+    input[type="text"],
+    input[type="url"],
+    select,
+    textarea {
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      flex-grow: 1;
+    }
+
+    input[type="url"],
+    select {
+      width: 100%;
+    }
+
+    textarea {
+      width: 100%;
+      height: 100px;
+      resize: none;
+    }
+
+    button {
+      padding: 10px 20px;
+      border: none;
+      background-color: #007bff;
+      color: #fff;
+      cursor: pointer;
+      border-radius: 5px;
+      transition: background-color 0.3s;
+      margin-left: 10px;
+    }
+
+    button:hover {
+      background-color: #0056b3;
+    }
+
+    .info-box {
+      padding: 10px;
+      background-color: #e9ecef;
+      margin-top: 10px;
+      border-radius: 5px;
+    }
+
+    .info-title {
+      font-weight: bold;
+      margin-bottom: 5px;
+    }
+
+    .code-block {
+      background-color: #f8f9fa;
+      padding: 10px;
+      border-radius: 5px;
+      white-space: pre-wrap;
+      font-family: monospace;
+      margin-bottom: 10px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 5px;
+      font-weight: bold;
+    }
+  </style>
+  <script type="text/javascript">
+    let ws;
+
+    function connectWebSocket() {
+      const serverUrl = "ws://" + window.location.host + "/ws";
+      ws = new WebSocket(serverUrl);
+
+      ws.onopen = function () {
+        console.log("WebSocket 连接已打开");
+        document.getElementById("status").innerText = "WebSocket 连接已建立";
+      };
+
+      ws.onmessage = function (event) {
+        console.log("接收到 WebSocket 消息: " + event.data);
+        const messageBox = document.getElementById("messages");
+        messageBox.value += "WebSocket: " + event.data + "\n";
+        messageBox.scrollTop = messageBox.scrollHeight;
+      };
+
+      ws.onclose = function () {
+        console.log("WebSocket 连接已关闭");
+        document.getElementById("status").innerText = "WebSocket 连接已关闭";
+      };
+
+      ws.onerror = function (error) {
+        console.error("WebSocket 错误: " + error);
+      };
+    }
+
+    function sendMessage() {
+      const message = document.getElementById("inputMessage").value;
+      if (ws && ws.readyState === WebSocket.OPEN) {
+        ws.send(message);
+        console.log("发送 WebSocket 消息: " + message);
+      } else {
+        alert("WebSocket 连接未建立");
+      }
+    }
+
+    function closeWebSocket() {
+      if (ws) {
+        ws.close();
+      }
+    }
+
+    function showHttpInfo(method, url, body, data) {
+      const infoBox = document.getElementById("httpInfo");
+      infoBox.innerHTML = `
+        <div class="info-title">${method} 请求</div>
+        <div><strong>URL:</strong> ${url}</div>
+        <div><strong>请求体:</strong> <pre>${JSON.stringify(body, null, 2)}</pre></div>
+        <div><strong>返回数据:</strong> <pre>${JSON.stringify(data, null, 2)}</pre></div>
+      `;
+    }
+
+    function sendGetRequest() {
+      const url = document.getElementById("getUrl").value;
+
+      fetch(url)
+        .then(response => response.json())
+        .then(data => {
+          showHttpInfo("GET", url, null, data);
+        })
+        .catch(error => {
+          console.error("GET 请求错误: " + error);
+        });
+    }
+
+    function sendPostRequest() {
+      const url = document.getElementById("postUrl").value;
+      const postData = JSON.parse(document.getElementById("postBody").value);
+
+      fetch(url, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(postData)
+      })
+        .then(response => response.json())
+        .then(data => {
+          showHttpInfo("POST", url, postData, data);
+        })
+        .catch(error => {
+          console.error("POST 请求错误: " + error);
+        });
+    }
+
+    function updatePostBody() {
+      const url = document.getElementById("postUrl").value;
+      const postBody = document.getElementById("postBody");
+
+      switch (url) {
+        case "/echo_json":
+          postBody.value = JSON.stringify({ "name": "wy", "id": 711 }, null, 2);
+          break;
+        case "/login":
+          postBody.value = JSON.stringify({ "username": "admin", "password": "123456" }, null, 2);
+          break;
+        case "/logout":
+          postBody.value = JSON.stringify({ "username": "admin" }, null, 2);
+          break;
+        default:
+          postBody.value = "{}";
+      }
+    }
+  </script>
+</head>
+
+<body>
+  <div class="container">
+    <h1>WebSocket 和 HTTP 请求示例</h1>
+
+    <p id="status" class="status">WebSocket 连接状态: 未连接</p>
+
+    <!-- WebSocket 控制按钮 -->
+    <div class="controls">
+      <button onclick="connectWebSocket()">建立 WebSocket 连接</button>
+      <button onclick="closeWebSocket()">关闭 WebSocket 连接</button>
+    </div>
+
+    <!-- WebSocket 输入消息 -->
+    <div class="controls">
+      <input type="text" id="inputMessage" placeholder="输入 WebSocket 消息">
+      <button onclick="sendMessage()">发送 WebSocket 消息</button>
+    </div>
+
+    <!-- 消息显示框 -->
+    <textarea id="messages" class="messages" readonly></textarea>
+
+    <!-- HTTP 请求 -->
+    <h2>HTTP 请求</h2>
+
+    <!-- GET 请求 -->
+    <div class="controls">
+      <label for="getUrl">GET 请求 URL:</label>
+      <input type="url" id="getUrl" value="/get_json" placeholder="输入 GET 请求 URL">
+      <button onclick="sendGetRequest()">发送 GET 请求</button>
+    </div>
+
+    <!-- POST 请求 -->
+    <div class="controls">
+      <label for="postUrl">POST 请求 URL:</label>
+      <select id="postUrl" onchange="updatePostBody()">
+        <option value="/echo_json">/echo_json</option>
+        <option value="/login">/login</option>
+        <option value="/logout">/logout</option>
+        <!-- 您可以添加更多的 POST URL 选项 -->
+      </select>
+    </div>
+    <div class="controls">
+      <label for="postBody">POST 请求体:</label>
+      <textarea id="postBody" placeholder="输入 POST 请求体 (JSON 格式)">{ "name": "wy", "id": 711 }</textarea>
+      <button onclick="sendPostRequest()">发送 POST 请求</button>
+    </div>
+
+    <!-- 显示 HTTP 请求详细信息 -->
+    <div id="httpInfo" class="info-box"></div>
+  </div>
+</body>
+
+</html>

@@ -15,7 +15,7 @@ public:
     void static TearDownCase()
     {
         struct rusage r_usage;
-        getrusage( RUSAGE_SELF, &r_usage );
+        getrusage(RUSAGE_SELF, &r_usage);
         std::cout << "TearDownCase  Memory usage: " << r_usage.ru_maxrss << " KB" << std::endl;
     }
 
@@ -25,7 +25,7 @@ protected:
     virtual void TearDown()
     {
         struct rusage r_usage;
-        getrusage( RUSAGE_SELF, &r_usage );
+        getrusage(RUSAGE_SELF, &r_usage);
         std::cout << "TearDown  Memory usage: " << r_usage.ru_maxrss << " KB" << std::endl;
     }
 };
@@ -106,36 +106,36 @@ TEST_F( ContainerTest, list_clear_1 )
 }
 */
 
-std::set< std::string > g_s;
+std::set<std::string> g_s;
 
-TEST_F( ContainerTest, set_add_1 )
+TEST_F(ContainerTest, set_add_1)
 {
-    for ( size_t i = 0; i < LOOP_CNT; i++ )
+    for (size_t i = 0; i < LOOP_CNT; i++)
     {
-        g_s.insert( std::to_string( i ) );
+        g_s.insert(std::to_string(i));
     }
 }
 
-TEST_F( ContainerTest, set_query_1 )
+TEST_F(ContainerTest, set_query_1)
 {
-    for ( size_t i = 0; i < LOOP_CNT; i++ )
+    for (size_t i = 0; i < LOOP_CNT; i++)
     {
-        ASSERT_TRUE( g_s.find( std::to_string( i ) ) != g_s.end() );
+        ASSERT_TRUE(g_s.find(std::to_string(i)) != g_s.end());
     }
 }
 
-TEST_F( ContainerTest, set_erase_1 )
+TEST_F(ContainerTest, set_erase_1)
 {
-    for ( size_t i = 0; i < LOOP_CNT; i++ )
+    for (size_t i = 0; i < LOOP_CNT; i++)
     {
-        if ( i % 10 == 0 )
+        if (i % 10 == 0)
         {
-            g_s.erase( std::to_string( i ) );
+            g_s.erase(std::to_string(i));
         }
     }
 }
 
-TEST_F( ContainerTest, set_clear_1 )
+TEST_F(ContainerTest, set_clear_1)
 {
     g_s.clear();
 }
