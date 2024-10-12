@@ -26,10 +26,9 @@ class HttpSvrImp
 {
 public:
     /**
-     * @brief 构造函数，初始化Http服务的端口号，默认为8080。
-     * @param port 服务端口号，默认值为8080。
+     * @brief 构造函数，默认构造。
      */
-    explicit HttpSvrImp(uint16_t port = 8080) : m_port(port){};
+    explicit HttpSvrImp() = default;
 
     /**
      * @brief 析构函数，默认析构。
@@ -48,16 +47,28 @@ public:
     void Stop();
 
     /**
-     * @brief 获取当前服务的端口号。
-     * @return 返回当前服务的端口号。
+     * @brief 获取当前服务的http端口号。
+     * @return 返回当前服务的http端口号。
      */
     uint16_t GetPort();
 
     /**
-     * @brief 设置服务端口号。
-     * @param port 要设置的服务端口号。
+     * @brief 设置服务http端口号。
+     * @param port 要设置的服务http端口号。
      */
     void SetPort(uint16_t port);
+
+    /**
+     * @brief 获取当前服务的https端口号。
+     * @return 返回当前服务的https端口号。
+     * */
+    uint16_t GetHttpsPort();
+
+    /**
+     * @brief 设置服务https端口号。
+     * @param port 要设置的服务https端口号。
+     * */
+    void SetHttpsPort(uint16_t port);
 
     /**
      * @brief 向所有WebSocket连接的客户端广播消息。
@@ -145,10 +156,11 @@ private:
     void RegisterWs();
 
 private:
-    hv::HttpService      m_router;       // HTTP路由处理器
-    hv::WebSocketService m_ws;           // WebSocket服务处理器
-    hv::HttpServer       m_server;       // HTTP服务器
-    uint16_t             m_port = 8080;  // 服务器端口号，默认为8080
+    hv::HttpService      m_router;             // HTTP路由处理器
+    hv::WebSocketService m_ws;                 // WebSocket服务处理器
+    hv::HttpServer       m_server;             // HTTP服务器
+    uint16_t             m_port      = 8080;   // 服务器http端口号，默认为8080
+    uint16_t             m_httpsPort = 10043;  // 服务器https端口号，默认为10043
 
     std::set<WebSocketChannelPtr> m_wsChannels;  // WebSocket连接的客户端集合，用于广播
     std::mutex                    m_wsChannelsMutex;  // 保护WebSocket连接的互斥锁

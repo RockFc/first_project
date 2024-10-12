@@ -10,6 +10,7 @@ bool HttpSvrImp::Start()
 
     // static files
     RegisterStaticRoute("/", "../html");
+    RegisterStaticRoute("/s/", "../htmls");
 
     // middleware
     m_router.AllowCORS();
@@ -24,6 +25,20 @@ bool HttpSvrImp::Start()
     m_server.service = &m_router;
     m_server.ws      = &m_ws;
     m_server.port    = m_port;
+
+    // support https
+    m_server.https_port = m_httpsPort;
+    hssl_ctx_opt_t param;
+    memset(&param, 0, sizeof(param));
+    param.crt_file = "../cert/server.crt";
+    param.key_file = "../cert/server.key";
+    param.endpoint = HSSL_SERVER;
+    if (m_server.newSslCtx(&param) != 0)
+    {
+        fprintf(stderr, "new SSL_CTX failed!\n");
+        return false;
+    }
+
     m_server.setThreadNum(4);
     return 0 == m_server.start() ? true : false;
 }
@@ -41,6 +56,16 @@ uint16_t HttpSvrImp::GetPort()
 void HttpSvrImp::SetPort(uint16_t port)
 {
     m_server.port = port;
+}
+
+uint16_t HttpSvrImp::GetHttpsPort()
+{
+    return m_server.https_port;
+}
+
+void HttpSvrImp::SetHttpsPort(uint16_t port)
+{
+    m_server.https_port = port;
 }
 
 void HttpSvrImp::Broadcast(const std::string& msg)

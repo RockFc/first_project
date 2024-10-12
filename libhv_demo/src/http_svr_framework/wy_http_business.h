@@ -47,6 +47,7 @@ public:
         if (wy::HttpSvr::Instance().Start())
         {
             printf("http server start success on %d\n", wy::HttpSvr::Instance().GetPort());
+            printf("https server start success on %d\n", wy::HttpSvr::Instance().GetHttpsPort());
             return true;
         }
         else
