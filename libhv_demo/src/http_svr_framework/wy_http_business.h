@@ -20,6 +20,12 @@ public:
                 std::bind(&wy::HttpBusiness::Login, this, std::placeholders::_1,
                           std::placeholders::_2)));
 
+        wy::HttpSvr::Instance().RegisterRoute(
+            http_method::HTTP_POST, "/logout",
+            std::function<bool(std::shared_ptr<wy::LogoutMsg>, std::shared_ptr<wy::LogoutMsg>)>(
+                std::bind(&wy::HttpBusiness::Logout, this, std::placeholders::_1,
+                          std::placeholders::_2)));
+
         // wy::HttpSvr::Instance().RegisterRoute(
         //     http_method::HTTP_GET, "/get_json",
         //     std::function<bool(std::shared_ptr<wy::GetJsonMsg>,
@@ -56,7 +62,8 @@ public:
         {
             printf("login success\n");
             rsp->success = true;
-            ontime();
+            StartTimer();
+            m_timerIsRunning = true;
             return true;
         }
         else
@@ -65,6 +72,17 @@ public:
             rsp->success = false;
             return false;
         }
+    }
+
+    bool Logout(std::shared_ptr<LogoutMsg> req, std::shared_ptr<LogoutMsg> rsp)
+    {
+        if (req->username == "admin")
+        {
+            printf("logout success\n");
+            rsp->username    = "admin";
+            m_timerIsRunning = false;
+        }
+        return true;
     }
 
     bool Echo(std::shared_ptr<EchoMsg> req, std::shared_ptr<EchoMsg> rsp)
@@ -84,33 +102,41 @@ public:
     }
 
 private:
-    void ontime()
+    void StartTimer()
     {
+        if (m_timerIsRunning)
+        {
+            return;
+        }
+
         const hv::EventLoopPtr& loop = m_loopThread.loop();
         // runEvery 2s
         loop->setInterval(2000,
-                          [](hv::TimerID)
+                          [&loop, this](hv::TimerID id)
                           {
-                              printf("ontime\n");
-                              wy::HttpSvr::Instance().Broadcast("you are logined!");
-                          });
+                              if (!m_timerIsRunning.load())
+                              {
+                                  loop->killTimer(id);
+                              }
 
-        // runEvery 5s
-        loop->setInterval(5000,
-                          [](hv::TimerID)
-                          {
+                              printf("ontime\n");
+
                               auto       json                     = std::make_shared<hv::Json>();
                               char       str[DATETIME_FMT_BUFLEN] = {0};
                               datetime_t dt                       = datetime_now();
                               datetime_fmt(&dt, str);
                               (*json)["time_str"] = str;
-                              (*json)["id"]       = 7;
+                              (*json)["msg"]      = "you are logined!";
                               wy::HttpSvr::Instance().Broadcast(json->dump(2));
                           });
-        m_loopThread.start();
+        if (!m_loopThread.isRunning())
+        {
+            m_loopThread.start();
+        }
     }
 
 private:
     hv::EventLoopThread m_loopThread;
+    std::atomic<bool>   m_timerIsRunning{false};
 };
 }  // namespace wy

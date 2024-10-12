@@ -38,6 +38,23 @@ bool LoginRspMsg::FromJson(const hv::Json& json)
     return false;
 }
 
+std::shared_ptr<hv::Json> LogoutMsg::ToJson() const
+{
+    auto json           = std::make_shared<hv::Json>();
+    (*json)["username"] = username;
+    return json;
+}
+
+bool LogoutMsg::FromJson(const hv::Json& json)
+{
+    if (json.contains("username"))
+    {
+        username = json["username"];
+        return true;
+    }
+    return false;
+}
+
 std::shared_ptr<hv::Json> EchoMsg::ToJson() const
 {
     auto json       = std::make_shared<hv::Json>();

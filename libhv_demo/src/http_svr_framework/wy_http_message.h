@@ -32,6 +32,14 @@ struct LoginRspMsg : public HttpMsgBase
     bool                      FromJson(const hv::Json& json) override;
 };
 
+struct LogoutMsg : public HttpMsgBase
+{
+    std::string username;
+
+    std::shared_ptr<hv::Json> ToJson() const override;
+    bool                      FromJson(const hv::Json& json) override;
+};
+
 struct EchoMsg : public HttpMsgBase
 {
     std::string name;

@@ -80,7 +80,7 @@ srpc_demo/build/
 srpc_demo/product/
 
 libhv_demo/build/
-libhv_demo/product/
+libhv_demo/product/bin/
 
 spdlog_demo/build/
 spdlog_demo/product/

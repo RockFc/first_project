@@ -9,7 +9,7 @@ bool HttpSvrImp::Start()
     RegisterWs();
 
     // static files
-    RegisterStaticRoute("/", "./html");
+    RegisterStaticRoute("/", "../html");
 
     // middleware
     m_router.AllowCORS();
