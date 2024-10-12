@@ -116,7 +116,7 @@
     let ws;
 
     function connectWebSocket() {
-      const serverUrl = "ws://127.0.0.1:8080/ws";
+      const serverUrl = "ws://" + window.location.host + "/ws";
       ws = new WebSocket(serverUrl);
 
       ws.onopen = function () {
@@ -205,13 +205,13 @@
       const postBody = document.getElementById("postBody");
 
       switch (url) {
-        case "http://127.0.0.1:8080/echo_json":
+        case "/echo_json":
           postBody.value = JSON.stringify({ "name": "wy", "id": 711 }, null, 2);
           break;
-        case "http://127.0.0.1:8080/login":
+        case "/login":
           postBody.value = JSON.stringify({ "username": "admin", "password": "123456" }, null, 2);
           break;
-        case "http://127.0.0.1:8080/logout":
+        case "/logout":
           postBody.value = JSON.stringify({ "username": "admin" }, null, 2);
           break;
         default:
@@ -248,7 +248,7 @@
     <!-- GET 请求 -->
     <div class="controls">
       <label for="getUrl">GET 请求 URL:</label>
-      <input type="url" id="getUrl" value="http://127.0.0.1:8080/get_json" placeholder="输入 GET 请求 URL">
+      <input type="url" id="getUrl" value="/get_json" placeholder="输入 GET 请求 URL">
       <button onclick="sendGetRequest()">发送 GET 请求</button>
     </div>
 
@@ -256,9 +256,9 @@
     <div class="controls">
       <label for="postUrl">POST 请求 URL:</label>
       <select id="postUrl" onchange="updatePostBody()">
-        <option value="http://127.0.0.1:8080/echo_json">http://127.0.0.1:8080/echo_json</option>
-        <option value="http://127.0.0.1:8080/login">http://127.0.0.1:8080/login</option>
-        <option value="http://127.0.0.1:8080/logout">http://127.0.0.1:8080/logout</option>
+        <option value="/echo_json">/echo_json</option>
+        <option value="/login">/login</option>
+        <option value="/logout">/logout</option>
         <!-- 您可以添加更多的 POST URL 选项 -->
       </select>
     </div>
