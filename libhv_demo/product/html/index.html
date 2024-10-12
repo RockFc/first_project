@@ -211,6 +211,9 @@
         case "http://127.0.0.1:8080/login":
           postBody.value = JSON.stringify({ "username": "admin", "password": "123456" }, null, 2);
           break;
+        case "http://127.0.0.1:8080/logout":
+          postBody.value = JSON.stringify({ "username": "admin" }, null, 2);
+          break;
         default:
           postBody.value = "{}";
       }
@@ -255,6 +258,7 @@
       <select id="postUrl" onchange="updatePostBody()">
         <option value="http://127.0.0.1:8080/echo_json">http://127.0.0.1:8080/echo_json</option>
         <option value="http://127.0.0.1:8080/login">http://127.0.0.1:8080/login</option>
+        <option value="http://127.0.0.1:8080/logout">http://127.0.0.1:8080/logout</option>
         <!-- 您可以添加更多的 POST URL 选项 -->
       </select>
     </div>
