@@ -1,5 +1,34 @@
-#include "wy_http_business.h"
-#include "wy_http_svr.h"
+#include "HttpBusiness.h"
+#include "HttpServer.h"
+
+// 测试函数
+void DoComMsgPackTest()
+{
+    // 创建一个结构体实例
+    wy::ComMsgPack original{42, "Hello, World!", 95.5};
+
+    // 序列化结构体
+    size_t dataSize;
+    void*  serializedData = original.Serialize(dataSize);
+    if (!serializedData)
+    {
+        std::cout << "Failed to serialize data." << std::endl;
+        return;
+    }
+
+    std::cout << "Serialized data size: " << dataSize << " bytes" << std::endl;
+
+    // 反序列化结构体
+    wy::ComMsgPack deserialized;
+    deserialized.Deserialize(serializedData, dataSize);
+    std::cout << "Deserialized values:" << std::endl;
+    std::cout << "id: " << deserialized.id << std::endl;
+    std::cout << "name: " << deserialized.name << std::endl;
+    std::cout << "score: " << deserialized.score << std::endl;
+
+    // 释放分配的内存
+    free(serializedData);
+}
 
 int main()
 {

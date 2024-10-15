@@ -1,9 +1,9 @@
 #pragma once
 
+#include "HttpMessage.h"
+#include "HttpServer.h"
 #include "hv/EventLoopThread.h"
 #include "hv/htime.h"
-#include "wy_http_message.h"
-#include "wy_http_svr.h"
 
 namespace wy
 {

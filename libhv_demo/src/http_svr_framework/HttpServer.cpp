@@ -1,5 +1,5 @@
-#include "wy_http_svr.h"
-#include "wy_http_message.h"
+#include "HttpServer.h"
+#include "HttpMessage.h"
 
 namespace wy
 {
