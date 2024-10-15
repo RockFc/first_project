@@ -2,17 +2,13 @@
 #include <hv/HttpClient.h>
 #include <iostream>
 
-int main()
+// 创建 HttpClient 对象
+hv::HttpClient client;
+
+int HttpPostBin(const char* path, const MyStruct& original)
 {
-    // 创建 HttpClient 对象
-    hv::HttpClient client;
-
     // 设置 URL
-    const char* url = "http://localhost:10080/post_bin";
-
-    // 准备要发送的二进制数据
-    MyStruct original = {42, "Hello, World!", 3.14159};
-
+    std::string url = "http://localhost:10080/" + std::string(path);
     // 序列化结构体
     size_t dataSize;
     void*  serializedData = serialize(&original, &dataSize);
@@ -46,6 +42,21 @@ int main()
     std::cout << "Response status: " << resp->status_code << std::endl;
     MyStruct deserialized = deserialize(resp->body.data(), resp->body.size());
     printMyStruct(&deserialized);
+    return 0;
+}
 
+int main()
+{
+    // 准备要发送的二进制数据
+    MyStruct original = {42, "Hello, World!", 42.42};
+    // HttpPostBin("post_bin", original);
+    // original.intValue    = 43;
+    // original.doubleValue = 43.43;
+    // HttpPostBin("post_bin", original);
+
+    HttpPostBin("post_bin_delay", original);
+    original.intValue    = 43;
+    original.doubleValue = 43.43;
+    HttpPostBin("post_bin_delay", original);
     return 0;
 }
