@@ -14,4 +14,7 @@ add_executable(it_http_svr ItHttpServer.cpp ${http_svr_fw_src})
 target_link_libraries(it_http_svr gtest gtest_main ${LIBHV_LIB})
 
 add_executable(it_ws_svr ItWsServer.cpp ${http_svr_fw_src})
-target_link_libraries(it_ws_svr gtest gtest_main ${LIBHV_LIB} ${LIBUV_LIB})
+target_link_libraries(it_ws_svr gtest gtest_main ${LIBHV_LIB})
+
+add_executable(it_ws_cli ItWsClient.cpp)
+target_link_libraries(it_ws_cli gtest gtest_main ${LIBHV_LIB})

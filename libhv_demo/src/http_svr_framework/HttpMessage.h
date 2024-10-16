@@ -122,5 +122,10 @@ struct ComMsgPack
         // 反序列化 score
         memcpy(&score, ( char* )data + offset, sizeof(score));
     }
+
+    void Print()
+    {
+        printf("id: %d, name: %s, score: %f\n", id, name.c_str(), score);
+    }
 };
 }  // namespace wy

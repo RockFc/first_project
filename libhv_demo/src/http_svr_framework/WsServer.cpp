@@ -120,17 +120,18 @@ void WsSvrImp::RegisterWs()
             return;
         }
         auto pack = CreatePackFromBinData(msg);
-        pack->id  = m_wsMsgId++;
+        pack->id  = ++m_wsMsgId;
         if (nullptr == m_httpGetDataFunc)
         {
             printf("onmessage: recv bin msg, but no GetDataFunc!\n");
             return;
         }
+        std::unique_lock<std::mutex> lock(m_wsMsgToChannelMutex);
+        m_wsMsgToChannel.insert({pack->id, channel});
+        lock.unlock();
+
         // 使用方在执行GetDataFunc时，需要将msg的id保存起来,以便后续SendData时传回来
         m_httpGetDataFunc(pack);
-
-        std::lock_guard<std::mutex> lock(m_wsMsgToChannelMutex);
-        m_wsMsgToChannel.insert({pack->id, channel});
     };
     m_ws.onclose = [this](const WebSocketChannelPtr& channel)
     {
