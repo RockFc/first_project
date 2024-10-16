@@ -68,32 +68,37 @@ void WsSvrImp::Broadcast(const std::string& msg)
     std::lock_guard<std::mutex> lock(m_wsChannelsMutex);
     for (auto channel : m_wsChannels)
     {
-        channel->send(msg);
+        channel->send(msg.data(), msg.size(), WS_OPCODE_BINARY);
     }
 }
 
-void WsSvrImp::RegisterGetDataFunc(HttpGetDataCallBack msg)
+void WsSvrImp::Broadcast(std::shared_ptr<ComMsgPack> pack)
 {
-    m_httpGetDataFunc = msg;
+    std::lock_guard<std::mutex> lock(m_wsChannelsMutex);
+    for (auto channel : m_wsChannels)
+    {
+        SendBinData(channel, pack);
+    }
 }
 
-bool WsSvrImp::SendData(const std::shared_ptr<ComMsgPack>& msg)
+void WsSvrImp::RegisterGetDataFunc(HttpGetDataCallBack func)
 {
-    std::lock_guard<std::mutex> lock(m_wsMsgToChannelMutex);
-    auto                        it = m_wsMsgToChannel.find(msg->id);
+    m_httpGetDataFunc = func;
+}
+
+bool WsSvrImp::SendData(std::shared_ptr<ComMsgPack> pack)
+{
+    std::unique_lock<std::mutex> lock(m_wsMsgToChannelMutex);
+    auto                         it = m_wsMsgToChannel.find(pack->id);
     if (it == m_wsMsgToChannel.end())
     {
+        std::cout << "Failed to find channel for msg id: " << pack->id << std::endl;
         return false;
     }
-
-    size_t dataSize;
-    void*  data = msg->Serialize(dataSize);
-    if (!data)
-    {
-        std::cout << "Failed to serialize data." << std::endl;
-        return false;
-    }
-    return 0 != it->second->send(static_cast<const char*>(data), dataSize, WS_OPCODE_BINARY);
+    auto wsChannel = it->second;
+    m_wsMsgToChannel.erase(it);
+    lock.unlock();
+    return SendBinData(wsChannel, pack);
 }
 
 void WsSvrImp::RegisterWs()
@@ -110,21 +115,22 @@ void WsSvrImp::RegisterWs()
     {
         if (IsTextString(msg))
         {
-            printf("onmessage: %s\n", msg.c_str());
+            printf("onmessage: recv text msg, msg:[%s]\n", msg.c_str());
+            channel->send("please send bin data!");
             return;
         }
-
-        auto pack = std::make_shared<ComMsgPack>();
-        pack->Deserialize(msg.data(), msg.size());
-        pack->id = m_wsMsgId++;
-        // 使用方在执行GetDataFunc时，需要将msg的id保存起来,以便后续SendData时传回来
-        if (m_httpGetDataFunc)
+        auto pack = CreatePackFromBinData(msg);
+        pack->id  = m_wsMsgId++;
+        if (nullptr == m_httpGetDataFunc)
         {
-            m_httpGetDataFunc(pack);
+            printf("onmessage: recv bin msg, but no GetDataFunc!\n");
+            return;
         }
+        // 使用方在执行GetDataFunc时，需要将msg的id保存起来,以便后续SendData时传回来
+        m_httpGetDataFunc(pack);
 
         std::lock_guard<std::mutex> lock(m_wsMsgToChannelMutex);
-        m_wsMsgToChannel.insert(std::make_pair(pack->id, channel));
+        m_wsMsgToChannel.insert({pack->id, channel});
     };
     m_ws.onclose = [this](const WebSocketChannelPtr& channel)
     {
@@ -156,4 +162,27 @@ bool WsSvrImp::IsTextString(const std::string& data)
     // 如果所有字符都是可打印字符或常见的控制字符，则认为是文本
     return nonPrintableCount == 0;
 }
+
+bool WsSvrImp::SendBinData(WebSocketChannelPtr wsChannel, std::shared_ptr<ComMsgPack> pack)
+{
+    size_t dataSize;
+    void*  data = pack->Serialize(dataSize);
+    if (!data)
+    {
+        std::cout << "Failed to serialize data." << std::endl;
+        return false;
+    }
+
+    auto ret = wsChannel->send(static_cast<const char*>(data), dataSize, WS_OPCODE_BINARY);
+    delete[] data;
+    return 0 != ret;
+}
+
+std::shared_ptr<ComMsgPack> WsSvrImp::CreatePackFromBinData(const std::string& msg)
+{
+    auto pack = std::make_shared<ComMsgPack>();
+    pack->Deserialize(msg.data(), msg.size());
+    return pack;
+}
+
 }  // namespace wy

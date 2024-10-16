@@ -76,27 +76,37 @@ public:
 
     /**
      * @brief 向所有WebSocket连接的客户端广播消息。
-     * @param msg 要广播的消息内容。
+     * @param msg 要广播的二进制消息内容。
      **/
     void Broadcast(const std::string& msg);
+
+    /**
+     * @brief 向所有WebSocket连接的客户端广播消息。
+     * @param pack 要广播的业务结构体。
+     **/
+    void Broadcast(std::shared_ptr<ComMsgPack> pack);
 
     /**
      * @brief 注册获取数据函数，用于处理WebSocket连接。
      * @param func 获取数据的函数指针。
      * */
-    void RegisterGetDataFunc(HttpGetDataCallBack msg);
+    void RegisterGetDataFunc(HttpGetDataCallBack func);
 
     /**
      * @brief 向指定的WebSocket连接发送数据。
-     * @param msg 要发送的数据。
+     * @param pack 要发送的数据。
      * @return 发送成功返回true，发送失败返回false。
      * */
-    bool SendData(const std::shared_ptr<ComMsgPack>& msg);
+    bool SendData(std::shared_ptr<ComMsgPack> pack);
 
 private:
     void RegisterWs();
 
     bool IsTextString(const std::string& data);
+
+    bool SendBinData(WebSocketChannelPtr wsChannel, std::shared_ptr<ComMsgPack> pack);
+
+    std::shared_ptr<ComMsgPack> CreatePackFromBinData(const std::string& msg);
 
 private:
     hv::HttpService      m_router;             // HTTP路由处理器
@@ -111,8 +121,8 @@ private:
     HttpGetDataCallBack m_httpGetDataFunc = nullptr;  // 保存Http获取数据处理函数
 
     std::map<size_t, WebSocketChannelPtr> m_wsMsgToChannel;  // WebSocket消息到连接的映射
-    std::mutex m_wsMsgToChannelMutex;  // 保护WebSocket消息到连接的互斥锁
-    std::atomic<size_t> m_wsMsgId = 0;  // WebSocket消息ID，用于区分不同的消息
+    std::mutex          m_wsMsgToChannelMutex;  // 保护WebSocket消息到连接的互斥锁
+    std::atomic<size_t> m_wsMsgId = 0;          // WebSocket消息ID，用于区分不同的消息
 };
 
 /**
