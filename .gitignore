@@ -81,6 +81,7 @@ srpc_demo/product/
 
 libhv_demo/build/
 libhv_demo/product/bin/
+libhv_demo/product/test/
 
 spdlog_demo/build/
 spdlog_demo/product/
