@@ -1,11 +1,3 @@
-/*************************************************************
-Copyright: BGI , Ltd.
-Description: Http服务类。封装了HTTP和WebSocket服务的启动、停止以及接口注册功能。
-Author: fuchao
-Date: 2024-10-11
-History:
-**************************************************************/
-
 #pragma once
 
 #include "hv/HttpServer.h"
