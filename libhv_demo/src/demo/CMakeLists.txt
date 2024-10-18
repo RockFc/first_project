@@ -59,3 +59,6 @@ target_link_libraries(ws_svr_only_ws  ${LIBHV_LIB})
 
 add_executable(ws_cli_only_ws ws_cli_only_ws.cpp)
 target_link_libraries(ws_cli_only_ws  ${LIBHV_LIB})
+
+add_executable(hlog_test hlog_test.cpp )
+target_link_libraries(hlog_test  ${LIBHV_LIB})
