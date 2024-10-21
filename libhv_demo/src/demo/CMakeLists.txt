@@ -48,6 +48,9 @@ target_link_libraries(json_test  ${LIBHV_LIB})
 add_executable(ws_svr ws_svr.cpp )
 target_link_libraries(ws_svr  ${LIBHV_LIB})
 
+add_executable(ws_cli ws_cli.cpp )
+target_link_libraries(ws_cli  ${LIBHV_LIB})
+
 add_executable(ws_svr_bin ws_svr_bin.cpp)
 target_link_libraries(ws_svr_bin  ${LIBHV_LIB})
 
