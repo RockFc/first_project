@@ -12,6 +12,9 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 if(NOT CMAKE_BUILD_TYPE)
   set(CMAKE_BUILD_TYPE "Release" CACHE STRING "Choose the type of build." FORCE)
 endif()
+#当 CMAKE_BUILD_TYPE 被设置为 Release 时，CMake 会优先使用 CMAKE_CXX_FLAGS_RELEASE 的选项，而忽略 CMAKE_CXX_FLAGS_DEBUG。
+SET(CMAKE_CXX_FLAGS_DEBUG "-O0 -g -ggdb")       # Debug 模式选项
+SET(CMAKE_CXX_FLAGS_RELEASE "-O2 -g -ggdb")    # Release 模式选项
 
 # 设置option开关默认值
 option(BUILD_SRC "Builds src" ON)
@@ -64,7 +67,6 @@ if (ENABLE_GCOV)
 
     message(STATUS "Build with gcov")
 endif()
-
 
 #设置输出文件路径
 set (EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/product/bin)
