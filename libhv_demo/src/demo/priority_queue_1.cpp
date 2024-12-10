@@ -2,6 +2,7 @@
 #include <iostream>
 #include <queue>
 #include <string>
+#include <thread>
 #include <vector>
 
 #include "hv/EventLoopThread.h"
@@ -27,25 +28,29 @@ int main()
 
     std::priority_queue<Item> pq;
 
-    pq.push({10, "Low Priority",
+    pq.push({1, "Low Priority",
              []()
              {
                  std::cout << "Low Priority Task" << std::endl;
+                 std::this_thread::sleep_for(std::chrono::seconds(1));
              }});
-    pq.push({30, "High Priority",
+    pq.push({3, "High Priority",
              []()
              {
                  std::cout << "High Priority Task" << std::endl;
+                 std::this_thread::sleep_for(std::chrono::seconds(3));
              }});
-    pq.push({20, "Medium Priority-1",
+    pq.push({2, "Medium Priority-1",
              []()
              {
                  std::cout << "Medium Priority-1 Task" << std::endl;
+                 std::this_thread::sleep_for(std::chrono::seconds(2));
              }});
-    pq.push({20, "Medium Priority-2",
+    pq.push({2, "Medium Priority-2",
              []()
              {
                  std::cout << "Medium Priority-2 Task" << std::endl;
+                 std::this_thread::sleep_for(std::chrono::seconds(2));
              }});
 
     loop->setTimer(100,
@@ -53,7 +58,8 @@ int main()
                    {
                        if (!pq.empty())
                        {
-                           const auto& item = pq.top();
+                           const auto item = pq.top();
+                           pq.pop();
                            loop->queueInLoop(
                                [item]()
                                {
@@ -61,7 +67,6 @@ int main()
                                    //              << hv_gettid() << std::endl;
                                    item.tssk();
                                });
-                           pq.pop();
                        }
                    });
 
