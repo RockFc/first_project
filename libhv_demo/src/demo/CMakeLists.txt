@@ -65,3 +65,6 @@ target_link_libraries(ws_cli_only_ws  ${LIBHV_LIB})
 
 add_executable(hlog_test hlog_test.cpp )
 target_link_libraries(hlog_test  ${LIBHV_LIB})
+
+add_executable(pq_test priority_queue_1.cpp )
+target_link_libraries(pq_test  ${LIBHV_LIB})

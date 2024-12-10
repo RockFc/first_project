@@ -5,3 +5,5 @@ add_executable(t_test_1 template_test_1.cpp)
 add_executable(t_test_2 template_test_2.cpp)
 
 add_executable(l_test_1 lamdba_test_1.cpp)
+
+add_executable(pq_test_1 priority_queue_1.cpp)
