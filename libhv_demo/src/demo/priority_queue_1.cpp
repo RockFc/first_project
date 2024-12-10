@@ -10,12 +10,13 @@ using namespace hv;
 
 struct Item
 {
-    int         weight;
-    std::string name;
+    int                   weight;
+    std::string           name;
+    std::function<void()> tssk;
 
     bool operator<(const Item& other) const
     {
-        return weight < other.weight;  // 按权重降序排序
+        return weight < other.weight;  // 按权重降序排序，即权重越大优先级越高
     }
 };
 
@@ -26,10 +27,26 @@ int main()
 
     std::priority_queue<Item> pq;
 
-    pq.push({10, "Low Priority"});
-    pq.push({30, "High Priority"});
-    pq.push({20, "Medium Priority-1"});
-    pq.push({20, "Medium Priority-2"});
+    pq.push({10, "Low Priority",
+             []()
+             {
+                 std::cout << "Low Priority Task" << std::endl;
+             }});
+    pq.push({30, "High Priority",
+             []()
+             {
+                 std::cout << "High Priority Task" << std::endl;
+             }});
+    pq.push({20, "Medium Priority-1",
+             []()
+             {
+                 std::cout << "Medium Priority-1 Task" << std::endl;
+             }});
+    pq.push({20, "Medium Priority-2",
+             []()
+             {
+                 std::cout << "Medium Priority-2 Task" << std::endl;
+             }});
 
     loop->setTimer(100,
                    [&pq, &loop](TimerID)
@@ -40,8 +57,9 @@ int main()
                            loop->queueInLoop(
                                [item]()
                                {
-                                   std::cout << item.weight << " " << item.name << " "
-                                             << hv_gettid() << std::endl;
+                                   //    std::cout << item.weight << " " << item.name << " "
+                                   //              << hv_gettid() << std::endl;
+                                   item.tssk();
                                });
                            pq.pop();
                        }
