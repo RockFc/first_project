@@ -1,91 +1,100 @@
+#include <assert.h>
 #include <errno.h>
 #include <fcntl.h>
-#include <assert.h>
+#include <iostream>
 #include <string.h>
 #include <sys/mman.h>
 #include <sys/stat.h>
-#include <iostream>
 #include <unistd.h>
-
 
 #include "MmapFile.h"
 
-namespace ananas {
-namespace internal {
+namespace rock
+{
+namespace internal
+{
 
 static const size_t kDefaultSize = 1 * 1024 * 1024;
 
 static const int   kInvalidFile = -1;
 static char* const kInvalidAddr = reinterpret_cast<char*>(-1);
 
-
 // OMmapFile
-OMmapFile::OMmapFile() : file_(kInvalidFile),
-    memory_(kInvalidAddr),
-    offset_(0),
-    size_(0),
-    syncPos_(0) {
+OMmapFile::OMmapFile()
+    : file_(kInvalidFile), memory_(kInvalidAddr), offset_(0), size_(0), syncPos_(0)
+{
 }
 
-OMmapFile::~OMmapFile() {
+OMmapFile::~OMmapFile()
+{
     Close();
 }
 
-void OMmapFile::_ExtendFileSize(size_t size) {
+void OMmapFile::_ExtendFileSize(size_t size)
+{
     assert(file_ != kInvalidFile);
 
     if (size > size_)
         Truncate(size);
 }
 
-bool OMmapFile::Open(const std::string& file, bool bAppend) {
+bool OMmapFile::Open(const std::string& file, bool bAppend)
+{
     return Open(file.c_str(), bAppend);
 }
 
-bool OMmapFile::Open(const char* file, bool bAppend) {
+bool OMmapFile::Open(const char* file, bool bAppend)
+{
     Close();
 
     file_ = ::open(file, O_RDWR | O_CREAT | (bAppend ? O_APPEND : 0), 0644);
 
-    if (file_ == kInvalidFile) {
+    if (file_ == kInvalidFile)
+    {
         char err[128];
         snprintf(err, sizeof err - 1, "OpenWriteOnly %s failed\n", file);
         perror(err);
-        assert (false);
+        assert(false);
         return false;
     }
 
-    if (bAppend) {
+    if (bAppend)
+    {
         struct stat st;
         fstat(file_, &st);
-        size_ = std::max<size_t>(kDefaultSize, st.st_size);
+        size_   = std::max<size_t>(kDefaultSize, st.st_size);
         offset_ = st.st_size;
-    } else {
-        size_ = kDefaultSize;
+    }
+    else
+    {
+        size_   = kDefaultSize;
         offset_ = 0;
     }
 
     int ret = ::ftruncate(file_, size_);
-    assert (ret == 0);
+    assert(ret == 0);
 
     return _MapWriteOnly();
 }
 
-void  OMmapFile::Close() {
-    if (file_ != kInvalidFile) {
+void OMmapFile::Close()
+{
+    if (file_ != kInvalidFile)
+    {
         ::munmap(memory_, size_);
         ::ftruncate(file_, offset_);
         ::close(file_);
 
-        file_ = kInvalidFile;
-        size_ = 0;
-        memory_ = kInvalidAddr;
-        offset_ = 0;
+        file_    = kInvalidFile;
+        size_    = 0;
+        memory_  = kInvalidAddr;
+        offset_  = 0;
         syncPos_ = 0;
     }
 }
 
-bool    OMmapFile::Sync() {
+bool OMmapFile::Sync()
+{
     if (file_ == kInvalidFile)
         return false;
 
@@ -98,49 +107,56 @@ bool    OMmapFile::Sync() {
     return true;
 }
 
-bool OMmapFile::_MapWriteOnly() {
-    if (size_ == 0 || file_ == kInvalidFile) {
-        assert (false);
+bool OMmapFile::_MapWriteOnly()
+{
+    if (size_ == 0 || file_ == kInvalidFile)
+    {
+        assert(false);
         return false;
     }
 
-    memory_ = (char*)::mmap(0, size_, PROT_WRITE, MAP_SHARED, file_, 0);
+    memory_ = ( char* )::mmap(0, size_, PROT_WRITE, MAP_SHARED, file_, 0);
     return (memory_ != kInvalidAddr);
 }
 
-void OMmapFile::Truncate(std::size_t  size) {
+void OMmapFile::Truncate(std::size_t size)
+{
     if (size == size_)
         return;
 
-    size_ = size;
+    size_   = size;
     int ret = ::ftruncate(file_, size_);
-    assert (ret == 0);
+    assert(ret == 0);
 
-    if (offset_> size_)
+    if (offset_ > size_)
         offset_ = size_;
 
     _MapWriteOnly();
 }
 
-bool OMmapFile::IsOpen() const {
-    return  file_ != kInvalidFile;
+bool OMmapFile::IsOpen() const
+{
+    return file_ != kInvalidFile;
 }
 
 // consumer
-void OMmapFile::Write(const void* data, size_t len) {
+void OMmapFile::Write(const void* data, size_t len)
+{
     _AssureSpace(len);
 
-    assert (offset_ + len <= size_);
+    assert(offset_ + len <= size_);
 
     ::memcpy(memory_ + offset_, data, len);
     offset_ += len;
     assert(offset_ <= size_);
 }
 
-void OMmapFile::_AssureSpace(size_t len) {
+void OMmapFile::_AssureSpace(size_t len)
+{
     size_t newSize = size_;
 
-    while (offset_ + len > newSize) {
+    while (offset_ + len > newSize)
+    {
         if (newSize == 0)
             newSize = kDefaultSize;
         else
@@ -150,7 +166,6 @@ void OMmapFile::_AssureSpace(size_t len) {
     _ExtendFileSize(newSize);
 }
 
-} // end namespace internal
+}  // end namespace internal
 
-} // end namespace ananas
-
+}  // end namespace rock

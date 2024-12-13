@@ -20,12 +20,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#include <tuple>
-#include <vector>
 #include <memory>
 #include <mutex>
+#include <tuple>
+#include <vector>
 
-namespace ananas {
+namespace rock
+{
 
 template <typename T>
 class Future;
@@ -39,63 +40,67 @@ class Try;
 template <typename T>
 struct TryWrapper;
 
-namespace internal {
+namespace internal
+{
 
-template<typename F, typename... Args>
+template <typename F, typename... Args>
 using ResultOf = decltype(std::declval<F>()(std::declval<Args>()...));
 
 // I don't know why, but must do it to cater compiler...
 template <typename F, typename... Args>
-struct ResultOfWrapper {
+struct ResultOfWrapper
+{
     using Type = ResultOf<F, Args...>;
 };
 
 // Test if F can be called with Args type
-template<typename F, typename... Args>
-struct CanCallWith {
+template <typename F, typename... Args>
+struct CanCallWith
+{
     // SFINAE  Check
-    template<typename T,
-             typename Dummy = ResultOf<T, Args...>>
-    static constexpr std::true_type
-    Check(std::nullptr_t dummy) {
+    template <typename T, typename Dummy = ResultOf<T, Args...>>
+    static constexpr std::true_type Check(std::nullptr_t dummy)
+    {
         return std::true_type{};
     };
 
-    template<typename Dummy>
-    static constexpr std::false_type
-    Check(...) {
+    template <typename Dummy>
+    static constexpr std::false_type Check(...)
+    {
         return std::false_type{};
     };
 
-    typedef decltype(Check<F>(nullptr)) type; // true_type if F can accept Args
-    static constexpr bool value = type::value; // the integral_constant's value
+    typedef decltype(Check<F>(nullptr)) type;                 // true_type if F can accept Args
+    static constexpr bool               value = type::value;  // the integral_constant's value
 };
 
-template<typename F, typename... Args>
+template <typename F, typename... Args>
 constexpr bool CanCallWith<F, Args...>::value;
 
 // simple traits
 template <typename T>
-struct IsFuture : std::false_type {
+struct IsFuture : std::false_type
+{
     using Inner = T;
 };
 
 template <typename T>
-struct IsFuture<Future<T>> : std::true_type {
+struct IsFuture<Future<T>> : std::true_type
+{
     using Inner = T;
 };
 
-template<typename F, typename T>
-struct CallableResult {
+template <typename F, typename T>
+struct CallableResult
+{
     // Test F call with arg type: void, T&&, T&, but do NOT choose Try type as args
     typedef
-    typename std::conditional<
-    CanCallWith<F>::value, // if true, F can call with void
-                ResultOfWrapper<F>,
-                typename std::conditional< // NO, F(void) is invalid
-                CanCallWith<F, T&&>::value, // if true, F(T&&) is valid
-                ResultOfWrapper<F, T&&>, // Yes, F(T&&) is ok
-                ResultOfWrapper<F, T&> >::type>::type Arg;  // Resort to F(T&)
+        typename std::conditional<CanCallWith<F>::value,  // if true, F can call with void
+                                  ResultOfWrapper<F>,
+                                  typename std::conditional<       // NO, F(void) is invalid
+                                      CanCallWith<F, T&&>::value,  // if true, F(T&&) is valid
+                                      ResultOfWrapper<F, T&&>,     // Yes, F(T&&) is ok
+                                      ResultOfWrapper<F, T&>>::type>::type Arg;  // Resort to F(T&)
 
     // If ReturnsFuture::value is true, F returns another future type.
     typedef IsFuture<typename Arg::Type> IsReturnsFuture;
@@ -104,20 +109,20 @@ struct CallableResult {
     typedef Future<typename IsReturnsFuture::Inner> ReturnFutureType;
 };
 
-
 // CallableResult specilization for void.
 // I don't know why folly works without this...
-template<typename F>
-struct CallableResult<F, void> {
+template <typename F>
+struct CallableResult<F, void>
+{
     // Test F call with arg type: void or Try(void)
-    typedef
-    typename std::conditional<
-    CanCallWith<F>::value, // if true, F can call with void
-                ResultOfWrapper<F>,
-                typename std::conditional< // NO, F(void) is invalid
-                CanCallWith<F, Try<void>&&>::value, // if true, F(Try<void>&&) is valid
-                ResultOfWrapper<F, Try<void>&&>, // Yes, F(Try<void>&& ) is ok
-                ResultOfWrapper<F, const Try<void>&>>::type>::type Arg;  // Above all failed, resort to F(const Try<void>&)
+    typedef typename std::conditional<
+        CanCallWith<F>::value,  // if true, F can call with void
+        ResultOfWrapper<F>,
+        typename std::conditional<               // NO, F(void) is invalid
+            CanCallWith<F, Try<void>&&>::value,  // if true, F(Try<void>&&) is valid
+            ResultOfWrapper<F, Try<void>&&>,     // Yes, F(Try<void>&& ) is ok
+            ResultOfWrapper<F, const Try<void>&>>::type>::type
+        Arg;  // Above all failed, resort to F(const Try<void>&)
 
     // If ReturnsFuture::value is true, F returns another future type.
     typedef IsFuture<typename Arg::Type> IsReturnsFuture;
@@ -130,22 +135,25 @@ struct CallableResult<F, void> {
 // For when_all
 //
 template <typename... ELEM>
-struct CollectAllVariadicContext {
+struct CollectAllVariadicContext
+{
     CollectAllVariadicContext() {}
 
     // Differ from folly: Do nothing here
-    ~CollectAllVariadicContext() { }
+    ~CollectAllVariadicContext() {}
 
-    CollectAllVariadicContext(const CollectAllVariadicContext& ) = delete;
-    void operator= (const CollectAllVariadicContext& ) = delete;
+    CollectAllVariadicContext(const CollectAllVariadicContext&) = delete;
+    void operator=(const CollectAllVariadicContext&)            = delete;
 
     template <typename T, size_t I>
-    inline void SetPartialResult(typename TryWrapper<T>::Type&& t) {
+    inline void SetPartialResult(typename TryWrapper<T>::Type&& t)
+    {
         std::unique_lock<std::mutex> guard(mutex);
 
         std::get<I>(results) = std::move(t);
         collects.push_back(I);
-        if (collects.size() == std::tuple_size<decltype(results)>::value) {
+        if (collects.size() == std::tuple_size<decltype(results)>::value)
+        {
             guard.unlock();
             pm.SetValue(std::move(results));
         }
@@ -154,36 +162,36 @@ struct CollectAllVariadicContext {
     // Sorry, typedef does not work..
 #define _TRYELEM_ typename TryWrapper<ELEM>::Type...
     Promise<std::tuple<_TRYELEM_>> pm;
-    std::mutex mutex;
-    std::tuple<_TRYELEM_> results;
-    std::vector<size_t> collects;
+    std::mutex                     mutex;
+    std::tuple<_TRYELEM_>          results;
+    std::vector<size_t>            collects;
 
-    typedef Future<std::tuple<_TRYELEM_>>FutureType;
+    typedef Future<std::tuple<_TRYELEM_>> FutureType;
 #undef _TRYELEM_
 };
 
 // base template
 template <template <typename...> class CTX, typename... Ts>
-void CollectVariadicHelper(const std::shared_ptr<CTX<Ts...>>& ) {
+void CollectVariadicHelper(const std::shared_ptr<CTX<Ts...>>&)
+{
 }
 
-template <template <typename ...> class CTX, typename... Ts,
-          typename THead, typename... TTail>
-void CollectVariadicHelper(const std::shared_ptr<CTX<Ts...>>& ctx,
-                           THead&& head, TTail&&... tail) {
+template <template <typename...> class CTX, typename... Ts, typename THead, typename... TTail>
+void CollectVariadicHelper(const std::shared_ptr<CTX<Ts...>>& ctx, THead&& head, TTail&&... tail)
+{
     using InnerTry = typename TryWrapper<typename THead::InnerType>::Type;
-    head.Then([ctx](InnerTry&& t) {
-        ctx->template SetPartialResult<InnerTry,
-                                       sizeof...(Ts) - sizeof...(TTail) - 1>(std::move(t));
-    });
+    head.Then(
+        [ctx](InnerTry&& t)
+        {
+            ctx->template SetPartialResult<InnerTry, sizeof...(Ts) - sizeof...(TTail) - 1>(
+                std::move(t));
+        });
 
     CollectVariadicHelper(ctx, std::forward<TTail>(tail)...);
 }
 
+}  // end namespace internal
 
-} // end namespace internal
-
-} // end namespace ananas
+}  // namespace rock
 
 #endif
-

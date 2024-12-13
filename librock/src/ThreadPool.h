@@ -20,7 +20,7 @@
 ///  immediately. When it done, function process_heavy_work_result will be called.
 ///  The type of argument of process_heavy_work_result is the same as the return
 ///  type of your_heavy_work.
-namespace ananas
+namespace rock
 {
 
 ///@brief A powerful ThreadPool implementation with Future interface.
@@ -175,6 +175,6 @@ auto ThreadPool::Execute(F&& f, Args&&... args) -> Future<void>
     return future;
 }
 
-}  // end namespace ananas
+}  // end namespace rock
 
 #endif

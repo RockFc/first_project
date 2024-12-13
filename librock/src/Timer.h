@@ -2,38 +2,42 @@
 #ifndef BERT_TIMERMANAGER_H
 #define BERT_TIMERMANAGER_H
 
-#include <map>
 #include <chrono>
 #include <functional>
+#include <map>
 #include <memory>
 #include <ostream>
 
 ///@file Timer.h
-namespace ananas {
+namespace rock
+{
 
 using DurationMs = std::chrono::milliseconds;
-using TimePoint = std::chrono::steady_clock::time_point;
-using TimerId = std::shared_ptr<std::pair<TimePoint, unsigned int> >;
+using TimePoint  = std::chrono::steady_clock::time_point;
+using TimerId    = std::shared_ptr<std::pair<TimePoint, unsigned int>>;
 
 constexpr int kForever = -1;
 
-inline std::ostream& operator<< (std::ostream& os, const TimerId& d) {
-    os << "[TimerId:" << (void*)d.get() << "]";
+inline std::ostream& operator<<(std::ostream& os, const TimerId& d)
+{
+    os << "[TimerId:" << ( void* )d.get() << "]";
     return os;
 }
 
-namespace internal {
+namespace internal
+{
 
 ///@brief TimerManager class
 ///
 /// You should not used it directly, but via Eventloop
-class TimerManager final {
+class TimerManager final
+{
 public:
     TimerManager();
     ~TimerManager();
 
-    TimerManager(const TimerManager& ) = delete;
-    void operator= (const TimerManager& ) = delete;
+    TimerManager(const TimerManager&)   = delete;
+    void operator=(const TimerManager&) = delete;
 
     // Tick
     void Update();
@@ -44,15 +48,19 @@ public:
     ///@param f The function to execute
     ///@param args Args for f
     ///
-    /// RepeatCount: Timer will be canceled after trigger RepeatCount times, kForever implies forever.
+    /// RepeatCount: Timer will be canceled after trigger RepeatCount times, kForever implies
+    /// forever.
     template <int RepeatCount, typename Duration, typename F, typename... Args>
-    TimerId ScheduleAtWithRepeat(const TimePoint& triggerTime, const Duration& period, F&& f, Args&&... args);
+    TimerId ScheduleAtWithRepeat(const TimePoint& triggerTime,
+                                 const Duration&  period,
+                                 F&&              f,
+                                 Args&&... args);
 
     ///@brief Schedule timer with period
     ///@param period: Timer will be triggered every period
     ///
-    /// RepeatCount: Timer will be canceled after triggered RepeatCount times, kForever implies forever.
-    /// PAY ATTENTION: Timer's first trigger isn't at once, but after period time
+    /// RepeatCount: Timer will be canceled after triggered RepeatCount times, kForever implies
+    /// forever. PAY ATTENTION: Timer's first trigger isn't at once, but after period time
     template <int RepeatCount, typename Duration, typename F, typename... Args>
     TimerId ScheduleAfterWithRepeat(const Duration& period, F&& f, Args&&... args);
 
@@ -77,25 +85,26 @@ public:
     DurationMs NearestTimer() const;
 
 private:
-    class Timer {
+    class Timer
+    {
         friend class TimerManager;
+
     public:
-        explicit
-        Timer(const TimePoint& tp);
+        explicit Timer(const TimePoint& tp);
 
         // only move
         Timer(Timer&& timer);
-        Timer& operator= (Timer&& );
+        Timer& operator=(Timer&&);
 
-        Timer(const Timer& ) = delete;
-        void operator= (const Timer& ) = delete;
+        Timer(const Timer&)          = delete;
+        void operator=(const Timer&) = delete;
 
         template <typename F, typename... Args>
         void SetCallback(F&& f, Args&&... args);
 
         void OnTimer();
 
-        TimerId Id() const;
+        TimerId      Id() const;
         unsigned int UniqueId() const;
 
     private:
@@ -103,9 +112,9 @@ private:
 
         TimerId id_;
 
-        std::function<void ()> func_;
-        DurationMs interval_;
-        int count_;
+        std::function<void()> func_;
+        DurationMs            interval_;
+        int                   count_;
     };
 
     std::multimap<TimePoint, Timer> timers_;
@@ -116,9 +125,12 @@ private:
     static unsigned int s_timerIdGen_;
 };
 
-
 template <int RepeatCount, typename Duration, typename F, typename... Args>
-TimerId TimerManager::ScheduleAtWithRepeat(const TimePoint& triggerTime, const Duration& period, F&& f, Args&&... args) {
+TimerId TimerManager::ScheduleAtWithRepeat(const TimePoint& triggerTime,
+                                           const Duration&  period,
+                                           F&&              f,
+                                           Args&&... args)
+{
     static_assert(RepeatCount != 0, "Why you add a timer with zero count?");
 
     using namespace std::chrono;
@@ -126,8 +138,8 @@ TimerId TimerManager::ScheduleAtWithRepeat(const TimePoint& triggerTime, const D
     Timer t(triggerTime);
     // precision: milliseconds
     t.interval_ = std::max(DurationMs(1), duration_cast<DurationMs>(period));
-    t.count_ = RepeatCount;
-    TimerId id = t.Id();
+    t.count_    = RepeatCount;
+    TimerId id  = t.Id();
 
     t.SetCallback(std::forward<F>(f), std::forward<Args>(args)...);
     timers_.insert(std::make_pair(triggerTime, std::move(t)));
@@ -135,37 +147,35 @@ TimerId TimerManager::ScheduleAtWithRepeat(const TimePoint& triggerTime, const D
 }
 
 template <int RepeatCount, typename Duration, typename F, typename... Args>
-TimerId TimerManager::ScheduleAfterWithRepeat(const Duration& period, F&& f, Args&&... args) {
+TimerId TimerManager::ScheduleAfterWithRepeat(const Duration& period, F&& f, Args&&... args)
+{
     const auto now = std::chrono::steady_clock::now();
-    return ScheduleAtWithRepeat<RepeatCount>(now + period,
-                                             period,
-                                             std::forward<F>(f),
+    return ScheduleAtWithRepeat<RepeatCount>(now + period, period, std::forward<F>(f),
                                              std::forward<Args>(args)...);
 }
 
 template <typename F, typename... Args>
-TimerId TimerManager::ScheduleAt(const TimePoint& triggerTime, F&& f, Args&&... args) {
+TimerId TimerManager::ScheduleAt(const TimePoint& triggerTime, F&& f, Args&&... args)
+{
     return ScheduleAtWithRepeat<1>(triggerTime,
-                                   DurationMs(0), // dummy
-                                   std::forward<F>(f),
-                                   std::forward<Args>(args)...);
+                                   DurationMs(0),  // dummy
+                                   std::forward<F>(f), std::forward<Args>(args)...);
 }
 
 template <typename Duration, typename F, typename... Args>
-TimerId TimerManager::ScheduleAfter(const Duration& duration, F&& f, Args&&... args) {
+TimerId TimerManager::ScheduleAfter(const Duration& duration, F&& f, Args&&... args)
+{
     const auto now = std::chrono::steady_clock::now();
-    return ScheduleAt(now + duration,
-                      std::forward<F>(f),
-                      std::forward<Args>(args)...);
+    return ScheduleAt(now + duration, std::forward<F>(f), std::forward<Args>(args)...);
 }
 
 template <typename F, typename... Args>
-void TimerManager::Timer::SetCallback(F&& f, Args&&... args) {
+void TimerManager::Timer::SetCallback(F&& f, Args&&... args)
+{
     func_ = std::bind(std::forward<F>(f), std::forward<Args>(args)...);
 }
 
-} // end namespace internal
-} // end namespace ananas
+}  // end namespace internal
+}  // end namespace rock
 
 #endif
-

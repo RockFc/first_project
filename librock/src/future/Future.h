@@ -11,7 +11,7 @@
 #include "Helper.h"
 #include "Try.h"
 
-namespace ananas
+namespace rock
 {
 
 namespace internal
@@ -981,6 +981,6 @@ WhenIfN(size_t                                                                  
     return ctx->pm.GetFuture();
 }
 
-}  // end namespace ananas
+}  // end namespace rock
 
 #endif

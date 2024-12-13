@@ -4,10 +4,10 @@
 #include <functional>
 #include <list>
 
-
 ///@file Delegate.h
 ///@brief A delegate class like C#
-namespace ananas {
+namespace rock
+{
 
 template <typename T>
 class Delegate;
@@ -26,7 +26,7 @@ class Delegate;
 ///
 ///  //测试委托
 ///  int n = 0;
-///  ananas::Delegate<void (int& )> cb;
+///  rock::Delegate<void (int& )> cb;
 ///  cb += Inc;
 ///  cb += Print;
 ///  cb(n);  // 先执行Inc,再执行print打印1
@@ -38,52 +38,55 @@ class Delegate;
 ///@endcode
 
 template <typename... Args>
-class Delegate<void (Args...)> {
+class Delegate<void(Args...)>
+{
 public:
-    typedef Delegate<void (Args...)> Self;
+    typedef Delegate<void(Args...)> Self;
 
     Delegate() = default;
 
-    Delegate(const Self& ) = delete;
-    Self& operator= (const Self& ) = delete;
+    Delegate(const Self&)        = delete;
+    Self& operator=(const Self&) = delete;
 
     template <typename F>
-    Delegate(F&& f) {
+    Delegate(F&& f)
+    {
         connect(std::forward<F>(f));
     }
 
-    Delegate(Self&& other) :
-        funcs_(std::move(other.funcs_)) {
-    }
+    Delegate(Self&& other) : funcs_(std::move(other.funcs_)) {}
 
     template <typename F>
-    Self& operator+=(F&& f) {
+    Self& operator+=(F&& f)
+    {
         connect(std::forward<F>(f));
         return *this;
     }
 
-    template<typename... ARGS>
-    void operator()(ARGS&&... args) {
+    template <typename... ARGS>
+    void operator()(ARGS&&... args)
+    {
         call(std::forward<ARGS>(args)...);
     }
 
 private:
-    std::list<std::function<void (Args ...)> > funcs_;
+    std::list<std::function<void(Args...)>> funcs_;
 
     template <typename F>
-    void connect(F&& f) {
+    void connect(F&& f)
+    {
         funcs_.emplace_back(std::forward<F>(f));
     }
 
     template <typename... ARGS>
-    void call(ARGS&&... args) {
+    void call(ARGS&&... args)
+    {
         // But what if rvalue args?
         for (const auto& f : funcs_)
             f(std::forward<ARGS>(args)...);
     }
 };
 
-} // end namespace ananas
+}  // end namespace rock
 
 #endif
-

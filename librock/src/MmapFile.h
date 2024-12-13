@@ -3,10 +3,13 @@
 
 #include <string>
 
-namespace ananas {
-namespace internal {
+namespace rock
+{
+namespace internal
+{
 
-class OMmapFile {
+class OMmapFile
+{
 public:
     OMmapFile();
     ~OMmapFile();
@@ -22,7 +25,8 @@ public:
     template <typename T>
     void Write(const T& t);
 
-    std::size_t Offset() const {
+    std::size_t Offset() const
+    {
         return offset_;
     }
     bool IsOpen() const;
@@ -32,22 +36,21 @@ private:
     void _ExtendFileSize(std::size_t size);
     void _AssureSpace(std::size_t size);
 
-    int file_;
-    char* memory_;
+    int         file_;
+    char*       memory_;
     std::size_t offset_;
     std::size_t size_;
     std::size_t syncPos_;
 };
 
-
 template <typename T>
-inline void OMmapFile::Write(const T& t) {
+inline void OMmapFile::Write(const T& t)
+{
     this->Write(&t, sizeof t);
 }
 
-} // end namespace internal
+}  // end namespace internal
 
-} // end namespace ananas
+}  // end namespace rock
 
 #endif
-

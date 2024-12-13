@@ -1,22 +1,25 @@
 
-#include <iostream>
 #include <cassert>
-#include <cstdlib>
 #include <cstdio>
-#include <sstream>
-#include <functional>
+#include <cstdlib>
 #include <errno.h>
+#include <functional>
+#include <iostream>
+#include <sstream>
 #include <sys/stat.h>
 #include <unistd.h>
 
-#include "TimeUtil.h"
 #include "Logger.h"
+#include "TimeUtil.h"
 
-namespace ananas {
+namespace rock
+{
 
-namespace {
+namespace
+{
 
-enum LogColor {
+enum LogColor
+{
     Red = 1,
     Green,
     Yellow,
@@ -33,11 +36,14 @@ enum LogColor {
 static const size_t kDefaultLogSize = 32 * 1024 * 1024;
 
 static const size_t kPrefixLevelLen = 6;
-static const size_t kPrefixTimeLen = 28;
+static const size_t kPrefixTimeLen  = 28;
 
-static bool MakeDir(const char* dir) {
-    if (mkdir(dir, 0755) != 0) {
-        if (EEXIST != errno) {
+static bool MakeDir(const char* dir)
+{
+    if (mkdir(dir, 0755) != 0)
+    {
+        if (EEXIST != errno)
+        {
             perror("MakeDir failed:");
             return false;
         }
@@ -46,42 +52,44 @@ static bool MakeDir(const char* dir) {
     return true;
 }
 
-thread_local char Logger::tmpBuffer_[Logger::kMaxCharPerLog];
-thread_local std::size_t Logger::pos_ = kPrefixLevelLen + kPrefixTimeLen;
-thread_local int64_t Logger::lastLogSecond_ = -1;
-thread_local int64_t Logger::lastLogMSecond_ = -1;
-thread_local unsigned int Logger::curLevel_ = 0;
-thread_local char Logger::tid_[16] = "";
-thread_local int Logger::tidLen_ = 0;
+thread_local char         Logger::tmpBuffer_[Logger::kMaxCharPerLog];
+thread_local std::size_t  Logger::pos_            = kPrefixLevelLen + kPrefixTimeLen;
+thread_local int64_t      Logger::lastLogSecond_  = -1;
+thread_local int64_t      Logger::lastLogMSecond_ = -1;
+thread_local unsigned int Logger::curLevel_       = 0;
+thread_local char         Logger::tid_[16]        = "";
+thread_local int          Logger::tidLen_         = 0;
 
 unsigned int Logger::seq_ = 0;
 
-Logger::Logger() : shutdown_(false),
-    level_(0),
-    dest_(0) {
+Logger::Logger() : shutdown_(false), level_(0), dest_(0)
+{
     _Reset();
 }
 
-Logger::~Logger() {
+Logger::~Logger()
+{
     _CloseLogFile();
 }
 
-bool Logger::Init(unsigned int level, unsigned int dest, const char* dir) {
-    level_      = level;
-    dest_       = dest;
-    directory_  = dir ? dir : ".";
+bool Logger::Init(unsigned int level, unsigned int dest, const char* dir)
+{
+    level_     = level;
+    dest_      = dest;
+    directory_ = dir ? dir : ".";
     if (directory_.back() == '/')
         directory_.pop_back();
 
     if (0 == level_)
-        return  true;
+        return true;
 
-    if (dest_ & logFile) {
-        return directory_ == "." ||
-               MakeDir(directory_.c_str());
+    if (dest_ & logFile)
+    {
+        return directory_ == "." || MakeDir(directory_.c_str());
     }
 
-    if (!(dest_ & logConsole)) {
+    if (!(dest_ & logConsole))
+    {
         std::cerr << "log has no output, but loglevel is " << level << std::endl;
         return false;
     }
@@ -89,78 +97,89 @@ bool Logger::Init(unsigned int level, unsigned int dest, const char* dir) {
     return true;
 }
 
-bool Logger::_CheckChangeFile() {
+bool Logger::_CheckChangeFile()
+{
     if (!file_.IsOpen())
         return true;
 
     return file_.Offset() + kMaxCharPerLog > kDefaultLogSize;
 }
 
-const std::string& Logger::_MakeFileName() {
-    char name[32];
-    Time now;
+const std::string& Logger::_MakeFileName()
+{
+    char   name[32];
+    Time   now;
     size_t len = now.FormatTime(name);
-    name[len] = '\0';
+    name[len]  = '\0';
 
-    auto n = std::chrono::system_clock::now();
+    auto        n     = std::chrono::system_clock::now();
     std::time_t now_c = std::chrono::system_clock::to_time_t(n);
-    char buffer[80];
+    char        buffer[80];
     std::strftime(buffer, sizeof(buffer), "%Y-%m-%d", std::localtime(&now_c));
     std::string time_str = std::string(buffer);
 
     std::ostringstream pid;
     pid << "_" << ::getpid() << "_";
 
-    seq_ ++;
-    fileName_  = directory_ + "/" + time_str + pid.str() + std::to_string(seq_) + ".log";
+    seq_++;
+    fileName_ = directory_ + "/" + time_str + pid.str() + std::to_string(seq_) + ".log";
 
     return fileName_;
 }
 
-bool Logger::_OpenLogFile(const std::string& name) {
+bool Logger::_OpenLogFile(const std::string& name)
+{
     return file_.Open(name.data(), true);
 }
 
-void Logger::_CloseLogFile() {
+void Logger::_CloseLogFile()
+{
     return file_.Close();
 }
 
 // TODO config
 static const int kFlushThreshold = 2 * 1024 * 1024;
 
-void Logger::Flush(enum LogLevel level) {
-    assert (level == curLevel_);
+void Logger::Flush(enum LogLevel level)
+{
+    assert(level == curLevel_);
 
-    if (IsLevelForbid(curLevel_)) {
+    if (IsLevelForbid(curLevel_))
+    {
         _Reset();
         return;
     }
 
-    if (!(level & curLevel_) ||
-            (pos_ < kPrefixTimeLen + kPrefixLevelLen)) {
-        assert (false);
+    if (!(level & curLevel_) || (pos_ < kPrefixTimeLen + kPrefixLevelLen))
+    {
+        assert(false);
         return;
     }
 
     if (pos_ == kPrefixTimeLen + kPrefixLevelLen)
-        return; // empty log
+        return;  // empty log
 
     Time now;
 
     auto seconds = now.MilliSeconds() / 1000;
-    if (seconds != lastLogSecond_) {
+    if (seconds != lastLogSecond_)
+    {
         now.FormatTime(tmpBuffer_);
         lastLogSecond_ = seconds;
-    } else {
+    }
+    else
+    {
         auto msec = now.MicroSeconds() % 1000000;
-        if (msec != lastLogMSecond_) {
+        if (msec != lastLogMSecond_)
+        {
             snprintf(tmpBuffer_ + 21, 7, "%06d", static_cast<int>(msec));
-            tmpBuffer_[27] = ']';
+            tmpBuffer_[27]  = ']';
             lastLogMSecond_ = msec;
         }
     }
 
-    switch(level) {
+    switch (level)
+    {
     case logINFO:
         memcpy(tmpBuffer_ + kPrefixTimeLen, "[INF]:", kPrefixLevelLen);
         break;
@@ -186,13 +205,14 @@ void Logger::Flush(enum LogLevel level) {
         break;
     }
 
-    if (tidLen_ == 0) {
+    if (tidLen_ == 0)
+    {
         std::ostringstream oss;
         oss << std::this_thread::get_id();
 
         const auto& str = oss.str();
-        tidLen_ = std::min<int>(str.size(), sizeof tid_);
-        tid_[0] = '|'; // | thread_id
+        tidLen_         = std::min<int>(str.size(), sizeof tid_);
+        tid_[0]         = '|';  // | thread_id
         memcpy(tid_ + 1, str.data(), tidLen_);
         tidLen_ += 1;
     }
@@ -201,13 +221,14 @@ void Logger::Flush(enum LogLevel level) {
     memcpy(tmpBuffer_ + pos_, tid_, tidLen_);
     pos_ += tidLen_;
 
-    tmpBuffer_[pos_ ++] = '\n';
-    tmpBuffer_[pos_] = '\0';
+    tmpBuffer_[pos_++] = '\n';
+    tmpBuffer_[pos_]   = '\0';
 
     BufferInfo* info = nullptr;
     {
         std::unique_lock<std::mutex> guard(mutex_);
-        if (shutdown_) {
+        if (shutdown_)
+        {
             std::cout << tmpBuffer_;
             return;
         }
@@ -216,7 +237,7 @@ void Logger::Flush(enum LogLevel level) {
         if (!info)
             buffers_[std::this_thread::get_id()].reset(info = new BufferInfo());
 
-        assert (!info->inuse_);
+        assert(!info->inuse_);
         info->inuse_ = true;
     }
 
@@ -229,30 +250,29 @@ void Logger::Flush(enum LogLevel level) {
 
     _Reset();
 
-    if (info->buffer_.ReadableSize() > kFlushThreshold) {
+    if (info->buffer_.ReadableSize() > kFlushThreshold)
+    {
         info->inuse_ = false;
         LogManager::Instance().AddBusyLog(this);
-    } else {
+    }
+    else
+    {
         info->inuse_ = false;
     }
 }
 
-void Logger::_Color(unsigned int color) {
+void Logger::_Color(unsigned int color)
+{
     const char* colorstrings[Max] = {
-        "",
-        "\033[1;31;40m",
-        "\033[1;32;40m",
-        "\033[1;33;40m",
-        "\033[0m",
-        "\033[1;34;40m",
-        "\033[1;35;40m",
-        "\033[1;37;40m",
+        "",        "\033[1;31;40m", "\033[1;32;40m", "\033[1;33;40m",
+        "\033[0m", "\033[1;34;40m", "\033[1;35;40m", "\033[1;37;40m",
     };
 
     fprintf(stdout, "%s", colorstrings[color]);
 }
 
-Logger&  Logger::operator<< (const char* msg) {
+Logger& Logger::operator<<(const char* msg)
+{
     if (IsLevelForbid(curLevel_))
         return *this;
 
@@ -263,191 +283,232 @@ Logger&  Logger::operator<< (const char* msg) {
     memcpy(tmpBuffer_ + pos_, msg, len);
     pos_ += len;
 
-    return  *this;
+    return *this;
 }
 
-Logger&  Logger::operator<< (const unsigned char* msg) {
+Logger& Logger::operator<<(const unsigned char* msg)
+{
     return operator<<(reinterpret_cast<const char*>(msg));
 }
 
-Logger&  Logger::operator<< (const std::string& msg) {
+Logger& Logger::operator<<(const std::string& msg)
+{
     return operator<<(msg.c_str());
 }
 
-Logger&  Logger::operator<< (void* ptr) {
+Logger& Logger::operator<<(void* ptr)
+{
     if (IsLevelForbid(curLevel_))
         return *this;
 
-    if (pos_ + 18 < kMaxCharPerLog) {
-        unsigned long ptrValue = (unsigned long)ptr;
+    if (pos_ + 18 < kMaxCharPerLog)
+    {
+        unsigned long ptrValue = ( unsigned long )ptr;
         auto nbytes = snprintf(tmpBuffer_ + pos_, kMaxCharPerLog - pos_, "%#018lx", ptrValue);
-        if (nbytes > 0) pos_ += nbytes;
+        if (nbytes > 0)
+            pos_ += nbytes;
     }
 
-    return  *this;
+    return *this;
 }
 
-
-Logger&  Logger::operator<< (unsigned char a) {
+Logger& Logger::operator<<(unsigned char a)
+{
     if (IsLevelForbid(curLevel_))
         return *this;
 
-    if (pos_ + 3 < kMaxCharPerLog) {
+    if (pos_ + 3 < kMaxCharPerLog)
+    {
         auto nbytes = snprintf(tmpBuffer_ + pos_, kMaxCharPerLog - pos_, "%hhd", a);
-        if (nbytes > 0) pos_ += nbytes;
+        if (nbytes > 0)
+            pos_ += nbytes;
     }
 
-    return  *this;
+    return *this;
 }
 
-
-Logger&  Logger::operator<< (char a) {
+Logger& Logger::operator<<(char a)
+{
     if (IsLevelForbid(curLevel_))
         return *this;
 
-    if (pos_ + 3 < kMaxCharPerLog) {
+    if (pos_ + 3 < kMaxCharPerLog)
+    {
         auto nbytes = snprintf(tmpBuffer_ + pos_, kMaxCharPerLog - pos_, "%hhu", a);
-        if (nbytes > 0) pos_ += nbytes;
+        if (nbytes > 0)
+            pos_ += nbytes;
     }
 
-    return  *this;
+    return *this;
 }
 
-Logger&  Logger::operator<< (unsigned short a) {
+Logger& Logger::operator<<(unsigned short a)
+{
     if (IsLevelForbid(curLevel_))
         return *this;
 
-    if (pos_ + 5 < kMaxCharPerLog) {
+    if (pos_ + 5 < kMaxCharPerLog)
+    {
         auto nbytes = snprintf(tmpBuffer_ + pos_, kMaxCharPerLog - pos_, "%hu", a);
-        if (nbytes > 0) pos_ += nbytes;
+        if (nbytes > 0)
+            pos_ += nbytes;
     }
 
-    return  *this;
+    return *this;
 }
 
-Logger&  Logger::operator<< (short a) {
+Logger& Logger::operator<<(short a)
+{
     if (IsLevelForbid(curLevel_))
         return *this;
 
-    if (pos_ + 5 < kMaxCharPerLog) {
+    if (pos_ + 5 < kMaxCharPerLog)
+    {
         auto nbytes = snprintf(tmpBuffer_ + pos_, kMaxCharPerLog - pos_, "%hd", a);
-        if (nbytes > 0) pos_ += nbytes;
+        if (nbytes > 0)
+            pos_ += nbytes;
     }
 
-    return  *this;
+    return *this;
 }
 
-Logger&  Logger::operator<< (unsigned int a) {
+Logger& Logger::operator<<(unsigned int a)
+{
     if (IsLevelForbid(curLevel_))
         return *this;
 
-    if (pos_ + 10 < kMaxCharPerLog) {
+    if (pos_ + 10 < kMaxCharPerLog)
+    {
         auto nbytes = snprintf(tmpBuffer_ + pos_, kMaxCharPerLog - pos_, "%u", a);
-        if (nbytes > 0) pos_ += nbytes;
+        if (nbytes > 0)
+            pos_ += nbytes;
     }
 
-    return  *this;
+    return *this;
 }
 
-Logger&  Logger::operator<< (int a) {
+Logger& Logger::operator<<(int a)
+{
     if (IsLevelForbid(curLevel_))
         return *this;
 
-    if (pos_ + 10 < kMaxCharPerLog) {
+    if (pos_ + 10 < kMaxCharPerLog)
+    {
         auto nbytes = snprintf(tmpBuffer_ + pos_, kMaxCharPerLog - pos_, "%d", a);
-        if (nbytes > 0) pos_ += nbytes;
+        if (nbytes > 0)
+            pos_ += nbytes;
     }
 
-    return  *this;
+    return *this;
 }
 
-Logger&  Logger::operator<< (unsigned long a) {
+Logger& Logger::operator<<(unsigned long a)
+{
     if (IsLevelForbid(curLevel_))
         return *this;
 
-    if (pos_ + 20 < kMaxCharPerLog) {
+    if (pos_ + 20 < kMaxCharPerLog)
+    {
         auto nbytes = snprintf(tmpBuffer_ + pos_, kMaxCharPerLog - pos_, "%lu", a);
-        if (nbytes > 0) pos_ += nbytes;
+        if (nbytes > 0)
+            pos_ += nbytes;
     }
 
-    return  *this;
+    return *this;
 }
 
-Logger&  Logger::operator<< (long a) {
+Logger& Logger::operator<<(long a)
+{
     if (IsLevelForbid(curLevel_))
         return *this;
 
-    if (pos_ + 20 < kMaxCharPerLog) {
+    if (pos_ + 20 < kMaxCharPerLog)
+    {
         auto nbytes = snprintf(tmpBuffer_ + pos_, kMaxCharPerLog - pos_, "%ld", a);
-        if (nbytes > 0) pos_ += nbytes;
+        if (nbytes > 0)
+            pos_ += nbytes;
     }
 
-    return  *this;
+    return *this;
 }
 
-Logger&  Logger::operator<< (unsigned long long a) {
+Logger& Logger::operator<<(unsigned long long a)
+{
     if (IsLevelForbid(curLevel_))
         return *this;
 
-    if (pos_ + 20 < kMaxCharPerLog) {
+    if (pos_ + 20 < kMaxCharPerLog)
+    {
         auto nbytes = snprintf(tmpBuffer_ + pos_, kMaxCharPerLog - pos_, "%llu", a);
-        if (nbytes > 0) pos_ += nbytes;
+        if (nbytes > 0)
+            pos_ += nbytes;
     }
 
-    return  *this;
+    return *this;
 }
 
-Logger&  Logger::operator<< (long long a) {
+Logger& Logger::operator<<(long long a)
+{
     if (IsLevelForbid(curLevel_))
         return *this;
 
-    if (pos_ + 20 < kMaxCharPerLog) {
+    if (pos_ + 20 < kMaxCharPerLog)
+    {
         auto nbytes = snprintf(tmpBuffer_ + pos_, kMaxCharPerLog - pos_, "%lld", a);
-        if (nbytes > 0) pos_ += nbytes;
+        if (nbytes > 0)
+            pos_ += nbytes;
     }
 
-    return  *this;
+    return *this;
 }
 
-Logger&  Logger::operator<< (double a) {
+Logger& Logger::operator<<(double a)
+{
     if (IsLevelForbid(curLevel_))
         return *this;
 
-    if (pos_ + 20 < kMaxCharPerLog) {
+    if (pos_ + 20 < kMaxCharPerLog)
+    {
         auto nbytes = snprintf(tmpBuffer_ + pos_, kMaxCharPerLog - pos_, "%.6g", a);
-        if (nbytes > 0) pos_ += nbytes;
+        if (nbytes > 0)
+            pos_ += nbytes;
     }
 
-    return  *this;
+    return *this;
 }
 
-
-bool Logger::Update() {
-    std::vector<std::unique_ptr<BufferInfo> > tmpBufs;
+bool Logger::Update()
+{
+    std::vector<std::unique_ptr<BufferInfo>> tmpBufs;
 
     bool todo = false;
     {
         std::unique_lock<std::mutex> guard(mutex_);
 
-        for (auto it(buffers_.begin()); it != buffers_.end(); ) {
-            assert (it->second);
+        for (auto it(buffers_.begin()); it != buffers_.end();)
+        {
+            assert(it->second);
 
-            if (it->second->inuse_) {
+            if (it->second->inuse_)
+            {
                 // if logs is still in producing, there will be some work to do.
                 todo = true;
-                ++ it;
-            } else {
+                ++it;
+            }
+            else
+            {
                 tmpBufs.push_back(std::move(it->second));
                 it = buffers_.erase(it);
             }
         }
     }
 
-    for (auto& pbuf : tmpBufs) {
-        const char* data = pbuf->buffer_.ReadAddr();
-        const auto size = pbuf->buffer_.ReadableSize();
-        auto nWritten = _Log(data, size);
-        assert (nWritten == size);
+    for (auto& pbuf : tmpBufs)
+    {
+        const char* data     = pbuf->buffer_.ReadAddr();
+        const auto  size     = pbuf->buffer_.ReadableSize();
+        auto        nWritten = _Log(data, size);
+        assert(nWritten == size);
     }
 
     file_.Sync();
@@ -455,19 +516,23 @@ bool Logger::Update() {
     return todo;
 }
 
-void   Logger::_Reset() {
+void Logger::_Reset()
+{
     curLevel_ = 0;
-    pos_  = kPrefixLevelLen + kPrefixTimeLen ;
+    pos_      = kPrefixLevelLen + kPrefixTimeLen;
 }
 
-size_t  Logger::_Log(const char* data, size_t dataLen) {
+size_t Logger::_Log(const char* data, size_t dataLen)
+{
     const auto minLogSize = sizeof(int) + sizeof(size_t);
 
     size_t nOffset = 0;
-    while (nOffset + minLogSize < dataLen) {
-        int level = *(int*)(data + nOffset);
-        size_t len = *(size_t* )(data + nOffset + sizeof(int));
-        if (dataLen < nOffset + minLogSize + len) {
+    while (nOffset + minLogSize < dataLen)
+    {
+        int    level = *( int* )(data + nOffset);
+        size_t len   = *( size_t* )(data + nOffset + sizeof(int));
+        if (dataLen < nOffset + minLogSize + len)
+        {
             std::cerr << "_WriteLog skip 0!!!\n ";
             break;
         }
@@ -479,12 +544,14 @@ size_t  Logger::_Log(const char* data, size_t dataLen) {
     return nOffset;
 }
 
+void Logger::_WriteLog(int level, size_t len, const char* data)
+{
+    assert(len > 0 && data);
 
-void Logger::_WriteLog(int level, size_t len, const char* data) {
-    assert (len > 0 && data);
-
-    if (dest_ & logConsole) {
-        switch (level) {
+    if (dest_ & logConsole)
+    {
+        switch (level)
+        {
         case logINFO:
             _Color(Green);
             break;
@@ -514,51 +581,59 @@ void Logger::_WriteLog(int level, size_t len, const char* data) {
         _Color(Normal);
     }
 
-    if (dest_ & logFile) {
-        while (_CheckChangeFile()) {
+    if (dest_ & logFile)
+    {
+        while (_CheckChangeFile())
+        {
             _CloseLogFile();
             if (!_OpenLogFile(_MakeFileName().c_str()))
                 break;
         }
 
-        assert (file_.IsOpen());
+        assert(file_.IsOpen());
         file_.Write(data, len);
     }
 }
 
-Logger& Logger::SetCurLevel(unsigned int level) {
+Logger& Logger::SetCurLevel(unsigned int level)
+{
     curLevel_ = level;
     return *this;
 }
 
-void Logger::Shutdown() {
+void Logger::Shutdown()
+{
     std::unique_lock<std::mutex> guard(mutex_);
     if (shutdown_)
         return;
 
     shutdown_ = true;
-    std::cout << "stop logger " << (void*)this << std::endl;
+    std::cout << "stop logger " << ( void* )this << std::endl;
 }
 
-LogManager& LogManager::Instance() {
+LogManager& LogManager::Instance()
+{
     static LogManager mgr;
     return mgr;
 }
 
-LogManager::LogManager() : shutdown_(true) {
+LogManager::LogManager() : shutdown_(true)
+{
     nullLog_.Init(0);
 }
 
-void LogManager::Start() {
+void LogManager::Start()
+{
     std::unique_lock<std::mutex> guard(mutex_);
-    assert (shutdown_);
+    assert(shutdown_);
     shutdown_ = false;
 
-    auto io = std::bind(&LogManager::Run, this);
+    auto io   = std::bind(&LogManager::Run, this);
     iothread_ = std::thread{std::move(io)};
 }
 
-void LogManager::Stop() {
+void LogManager::Stop()
+{
     {
         std::unique_lock<std::mutex> guard(mutex_);
         if (shutdown_)
@@ -579,20 +654,30 @@ void LogManager::Stop() {
         iothread_.join();
 }
 
-std::shared_ptr<Logger> LogManager::CreateLog(unsigned int level,
-        unsigned int dest,
-        const char* dir) {
+std::shared_ptr<Logger>
+LogManager::CreateLog(unsigned int level, unsigned int dest, const char* dir)
+{
 
     auto log(std::make_shared<Logger>());
 
-    if (!log->Init(level, dest, dir)) {
-        std::shared_ptr<Logger> nulllog(&nullLog_, [](Logger* ) {});
+    if (!log->Init(level, dest, dir))
+    {
+        std::shared_ptr<Logger> nulllog(&nullLog_,
+                                        [](Logger*)
+                                        {
+                                        });
         return nulllog;
-    } else {
+    }
+    else
+    {
         std::lock_guard<std::mutex> guard(logsMutex_);
-        if (shutdown_) {
+        if (shutdown_)
+        {
             std::cerr << "Warning: Please call LogManager::Start() first\n";
-            std::shared_ptr<Logger> nulllog(&nullLog_, [](Logger* ) {});
+            std::shared_ptr<Logger> nulllog(&nullLog_,
+                                            [](Logger*)
+                                            {
+                                            });
             return nulllog;
         }
 
@@ -602,30 +687,33 @@ std::shared_ptr<Logger> LogManager::CreateLog(unsigned int level,
     return log;
 }
 
-
-void LogManager::AddBusyLog(Logger* log) {
+void LogManager::AddBusyLog(Logger* log)
+{
     std::unique_lock<std::mutex> guard(mutex_);
     if (shutdown_)
         return;
 
-    if (busyLogs_.insert(log).second) {
+    if (busyLogs_.insert(log).second)
+    {
         guard.unlock();
         cond_.notify_one();
     }
 }
 
-
-void LogManager::Run() {
+void LogManager::Run()
+{
     const std::chrono::milliseconds kFlushInterval(1);
 
     bool run = true;
-    while (run) {
-        std::vector<Logger* > tmpBusy;
+    while (run)
+    {
+        std::vector<Logger*> tmpBusy;
 
         {
             std::unique_lock<std::mutex> guard(mutex_);
             cond_.wait_for(guard, kFlushInterval);
-            if (!busyLogs_.empty()) {
+            if (!busyLogs_.empty())
+            {
                 tmpBusy.assign(busyLogs_.begin(), busyLogs_.end());
                 busyLogs_.clear();
             }
@@ -634,36 +722,39 @@ void LogManager::Run() {
                 run = false;
         }
 
-        if (tmpBusy.empty()) {
+        if (tmpBusy.empty())
+        {
             std::unique_lock<std::mutex> guard(logsMutex_);
             for (auto& plog : logs_)
                 tmpBusy.push_back(plog.get());
         }
 
-        for (auto plog : tmpBusy) {
+        for (auto plog : tmpBusy)
+        {
             plog->Update();
         }
     }
 
     std::unique_lock<std::mutex> guard(logsMutex_);
-    assert (shutdown_);
-    while (!logs_.empty()) {
-        for (auto it(logs_.begin()); it != logs_.end(); ) {
+    assert(shutdown_);
+    while (!logs_.empty())
+    {
+        for (auto it(logs_.begin()); it != logs_.end();)
+        {
             if (!(*it)->Update())
                 it = logs_.erase(it);
             else
-                ++ it;
+                ++it;
         }
     }
 }
 
-LogHelper::LogHelper(LogLevel level) : level_(level) {
-}
+LogHelper::LogHelper(LogLevel level) : level_(level) {}
 
-Logger& LogHelper::operator=(Logger& log) {
+Logger& LogHelper::operator=(Logger& log)
+{
     log.Flush(level_);
     return log;
 }
 
-} // end namespace ananas
-
+}  // end namespace rock

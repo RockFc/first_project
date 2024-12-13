@@ -1,9 +1,11 @@
 #ifndef BERT_SCHEDULER_H
 #define BERT_SCHEDULER_H
 
-namespace ananas {
+namespace rock
+{
 
-class Scheduler {
+class Scheduler
+{
 public:
     virtual ~Scheduler() {}
 
@@ -27,10 +29,9 @@ public:
      * &this_loop);
      */
     virtual void ScheduleLater(std::chrono::milliseconds duration, std::function<void()> f) = 0;
-    virtual void Schedule(std::function<void()> f) = 0;
+    virtual void Schedule(std::function<void()> f)                                          = 0;
 };
 
-} // end namespace ananas
+}  // end namespace rock
 
 #endif
-
