@@ -1,14 +1,17 @@
 
 # 最低版本需求
-cmake_minimum_required(VERSION 2.8)
+cmake_minimum_required(VERSION 3.6)
 
 # 工程名
-set (PROJECT_NAME gtest_demo_2)
+set (PROJECT_NAME rock)
 PROJECT(${PROJECT_NAME})
 
 # 设置option开关默认值
 option(BUILD_All "Builds all projects" ON)
 option(BUILD_TEST "Builds test projects" ON)
+option(BUILD_3T "Builds third party testcase" OFF)
+option(BUILD_UT "Builds unit testcase" OFF)
+option(BUILD_IT "Builds interface testcase" OFF)
 option(ENABLE_GCOV "Enable gcov (debug, Linux build only)." OFF)
 
 #包含系统头文件路径
@@ -29,8 +32,9 @@ if (ENABLE_GCOV)
     set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -fprofile-arcs -ftest-coverage")
     set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -fprofile-arcs -ftest-coverage")
     set(CMAKE_EXE_LINKER_FLAGS_DEBUG "${CMAKE_EXE_LINKER_FLAGS_DEBUG} -fprofile-arcs -ftest-coverage -lgcov")
+    message(STATUS "Build with gcov")
 endif()
-set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
@@ -46,4 +50,4 @@ message("编译后可执行程序目录: " ${EXECUTABLE_OUTPUT_PATH})
 message("编译后库程序文件目录: " ${LIBRARY_OUTPUT_PATH})
 
 ADD_SUBDIRECTORY(src)
-# ADD_SUBDIRECTORY(test)
+ADD_SUBDIRECTORY(test)
