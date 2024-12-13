@@ -130,9 +130,9 @@ void test_log_in_thred()
 int main(int ac, char* av[])
 {
 
-    // test_thread_pool();
+    test_thread_pool();
 
-    // test_log();
+    test_log();
 
     test_log_in_thred();
 
