@@ -399,7 +399,7 @@ public:
                 });
         }
 
-        return std::move(nextFuture);
+        return nextFuture;
     }
 
     // 2. F return another future type
