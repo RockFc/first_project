@@ -1,5 +1,4 @@
-#ifndef BERT_FUTURE_H
-#define BERT_FUTURE_H
+#pragma once
 
 #include <atomic>
 #include <condition_variable>
@@ -982,5 +981,3 @@ WhenIfN(size_t                                                                  
 }
 
 }  // end namespace rock
-
-#endif
