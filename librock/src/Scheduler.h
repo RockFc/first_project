@@ -1,5 +1,4 @@
-#ifndef BERT_SCHEDULER_H
-#define BERT_SCHEDULER_H
+#pragma once
 
 namespace rock
 {
@@ -33,5 +32,3 @@ public:
 };
 
 }  // end namespace rock
-
-#endif

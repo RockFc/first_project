@@ -1,5 +1,4 @@
-#ifndef BERT_THREADPOOL_H
-#define BERT_THREADPOOL_H
+#pragma once
 
 #include "future/Future.h"
 #include <condition_variable>
@@ -176,5 +175,3 @@ auto ThreadPool::Execute(F&& f, Args&&... args) -> Future<void>
 }
 
 }  // end namespace rock
-
-#endif

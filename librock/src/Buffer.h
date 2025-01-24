@@ -1,6 +1,5 @@
 
-#ifndef BERT_BUFFER_H
-#define BERT_BUFFER_H
+#pragma once
 
 #include <cstring>
 #include <list>
@@ -259,5 +258,3 @@ private:
 };
 
 }  // end namespace rock
-
-#endif

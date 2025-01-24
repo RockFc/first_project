@@ -1,5 +1,4 @@
-#ifndef BERT_DELEGATE_H
-#define BERT_DELEGATE_H
+#pragma once
 
 #include <functional>
 #include <list>
@@ -88,5 +87,3 @@ private:
 };
 
 }  // end namespace rock
-
-#endif

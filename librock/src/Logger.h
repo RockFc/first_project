@@ -1,5 +1,4 @@
-#ifndef BERT_LOGGER_H
-#define BERT_LOGGER_H
+#pragma once
 
 ///@file Logger.h
 ///@brief A multi-thread Logger class
@@ -203,5 +202,3 @@ private:
 #define USR LOG_USR
 
 }  // end namespace rock
-
-#endif

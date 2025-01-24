@@ -1,6 +1,5 @@
 
-#ifndef BERT_TIMEUTIL_H
-#define BERT_TIMEUTIL_H
+#pragma once
 
 #include <chrono>
 #include <ctime>
@@ -97,5 +96,3 @@ private:
 };
 
 }  // end namespace rock
-
-#endif

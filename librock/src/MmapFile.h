@@ -1,5 +1,4 @@
-#ifndef BERT_MMAPFILE_H
-#define BERT_MMAPFILE_H
+#pragma once
 
 #include <string>
 
@@ -52,5 +51,3 @@ inline void OMmapFile::Write(const T& t)
 }  // end namespace internal
 
 }  // end namespace rock
-
-#endif
