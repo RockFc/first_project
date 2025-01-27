@@ -29,6 +29,45 @@ TEST_F(FutureTest, SetValue_1)
     std::cout << "result: " << result << std::endl;
 }
 
+TEST_F(FutureTest, SetValue_2)
+{
+    try
+    {
+        rock::Promise<int> pm;
+        rock::Future<int>  fut = pm.GetFuture();
+        std::thread        t(
+            [&pm]
+            {
+                try
+                {
+                    std::this_thread::sleep_for(std::chrono::seconds(5));
+                    pm.SetValue(27);
+                }
+                catch (const std::exception& e)
+                {
+                    pm.SetException(std::make_exception_ptr(e));  // 传播异常
+                    std::cerr << "Exception in thread: " << e.what() << '\n';
+                }
+            });
+        t.detach();
+
+        int result = fut.Wait(std::chrono::milliseconds(2 * 1000));
+        if (fut.valid())
+        {
+            EXPECT_EQ(result, 27);
+            std::cout << "result: " << result << std::endl;
+        }
+        else
+        {
+            std::cout << "future is invalid" << std::endl;
+        }
+    }
+    catch (const std::exception& e)
+    {
+        std::cerr << "Exception in main: " << e.what() << '\n';
+    }
+}
+
 TEST_F(FutureTest, Then_1)
 {
     rock::Future<int> fut = rock::MakeReadyFuture(42);

@@ -89,6 +89,62 @@ TEST_F(ThreadPoolTest, Execute_1)
     pool.JoinAll();
 }
 
+TEST_F(ThreadPoolTest, Execute_2)
+{
+    rock::ThreadPool pool;
+    pool.SetNumOfThreads(4);
+    try
+    {
+        pool.Execute(
+                []()
+                {
+                    show_thread_info();
+                    std::cout << "hello rock!" << std::endl;
+                })
+            .Then(
+                []()
+                {
+                    show_thread_info();
+                    std::cout << "hello rock again!" << std::endl;
+                    std::cout << "sleep 10 second..." << std::endl;
+                    std::this_thread::sleep_for(std::chrono::seconds(10));
+                })
+            .Wait(std::chrono::milliseconds(2 * 1000));
+    }
+    catch (const std::exception& e)
+    {
+        std::cerr << "catch exception:" << e.what() << '\n';
+    }
+    pool.JoinAll();
+}
+
+TEST_F(ThreadPoolTest, Execute_3)
+{
+    rock::ThreadPool pool;
+    pool.SetNumOfThreads(4);
+    size_t count = 0;
+    try
+    {
+        auto fut = pool.Execute(
+                           [&count]()
+                           {
+                               std::cout << "add, count=" << ++count << std::endl;
+                           })
+                       .Then(
+                           [&count]()
+                           {
+                               std::cout << "add again, count=" << ++count << std::endl;
+                           });
+        fut.Wait();
+        std::cout << "wait count=" << count << std::endl;
+    }
+    catch (const std::exception& e)
+    {
+        std::cerr << "catch exception:" << e.what() << '\n';
+    }
+    pool.JoinAll();
+}
+
 TEST_F(ThreadPoolTest, Log_1)
 {
     rock::LogManager::Instance().Start();
