@@ -223,7 +223,7 @@ public:
                                           return ready;
                                       });
         if (success)
-            return std::move(value);
+            return value;
         else
             throw std::runtime_error("Future wait_for timeout");
     }

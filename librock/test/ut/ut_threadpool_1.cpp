@@ -1,15 +1,30 @@
-
-#include "Logger.h"
-#include "ThreadPool.h"
-#include "TimeUtil.h"
 #include <cstdlib>
+#include <gtest/gtest.h>
 #include <iostream>
 #include <sstream>
 #include <sys/syscall.h>
 #include <thread>
 #include <unistd.h>
-
+#define private public
+#define protected public
+#include "Logger.h"
+#include "ThreadPool.h"
+#include "TimeUtil.h"
 #include "common.h"
+#undef private
+#undef protected
+
+class ThreadPoolTest : public testing::Test
+{
+public:
+    void static SetUpTestCase() {}
+    void static TearDownCase() {}
+
+protected:
+    virtual void SetUp() {}
+
+    virtual void TearDown() {}
+};
 
 int getMoney(const std::string& name)
 {
@@ -21,7 +36,7 @@ std::string getInfo(int year, const std::string& city)
     return "hello " + std::to_string(year) + " " + city;
 }
 
-void test_thread_pool()
+TEST_F(ThreadPoolTest, Execute_1)
 {
     rock::ThreadPool pool;
     pool.SetNumOfThreads(4);
@@ -74,7 +89,7 @@ void test_thread_pool()
     pool.JoinAll();
 }
 
-void test_log()
+TEST_F(ThreadPoolTest, Log_1)
 {
     rock::LogManager::Instance().Start();
     // auto log = rock::LogManager::Instance().CreateLog(logDEBUG, logConsole);
@@ -94,7 +109,7 @@ void test_log()
     rock::LogManager::Instance().Stop();
 }
 
-void test_log_in_thred()
+TEST_F(ThreadPoolTest, Log_2)
 {
     rock::ThreadPool pool;
     pool.SetNumOfThreads(4);
@@ -125,16 +140,4 @@ void test_log_in_thred()
 
     sleep(3);
     rock::LogManager::Instance().Stop();
-}
-
-int main(int ac, char* av[])
-{
-
-    test_thread_pool();
-
-    test_log();
-
-    test_log_in_thred();
-
-    return 0;
 }
