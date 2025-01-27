@@ -26,5 +26,15 @@ int main()
         std::cout << std::get<0>(key) << ", " << std::get<1>(key) << ": " << value << std::endl;
     }
 
+    auto it = my_map_r.find({5, 6});
+    if (it != my_map_r.end())
+    {
+        std::cout << "Found:" << it->second << std::endl;
+    }
+    else
+    {
+        std::cout << "Not found" << std::endl;
+    }
+
     return 0;
 }
