@@ -39,9 +39,9 @@ find_package(Threads REQUIRED)
 link_libraries(Threads::Threads)
 
 # 指定 libhv 头文件路径
-set (LIBHV_INCLUDE_DIR ${PROJECT_SOURCE_DIR}/../../libhv/build/include)
+set (LIBHV_INCLUDE_DIR ${PROJECT_SOURCE_DIR}/../../libhv/out/libhv/include)
 # 指定 libhv 库的路径
-set(LIBHV_LIB ${PROJECT_SOURCE_DIR}/../../libhv/build/lib/libhv.so)
+set(LIBHV_LIB ${PROJECT_SOURCE_DIR}/../../libhv/out/libhv/lib/libhv.so)
 
 # 指定 libmodbus 头文件路径
 set (LIBMODBUS_INCLUDE_DIR ${PROJECT_SOURCE_DIR}/../../libmodbus/build/include)

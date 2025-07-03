@@ -11,10 +11,13 @@ aux_source_directory(${HTTP_SVR_FW_DIR} http_svr_fw_src)
 list(REMOVE_ITEM http_svr_fw_src "${HTTP_SVR_FW_DIR}/main.cpp")
 
 add_executable(it_http_svr ItHttpServer.cpp ${http_svr_fw_src})
-target_link_libraries(it_http_svr gtest gtest_main ${LIBHV_LIB})
+target_link_libraries(it_http_svr ${GTEST_LIBS} ${LIBHV_LIB})
 
 add_executable(it_ws_svr ItWsServer.cpp ${http_svr_fw_src})
-target_link_libraries(it_ws_svr gtest gtest_main ${LIBHV_LIB})
+target_link_libraries(it_ws_svr ${GTEST_LIBS} ${LIBHV_LIB})
 
 add_executable(it_ws_cli ItWsClient.cpp)
-target_link_libraries(it_ws_cli gtest gtest_main ${LIBHV_LIB})
+target_link_libraries(it_ws_cli ${GTEST_LIBS} ${LIBHV_LIB})
+
+add_executable(it_tp_1 ItThreadpool.cpp)
+target_link_libraries(it_tp_1 ${GTEST_LIBS} ${LIBHV_LIB})
