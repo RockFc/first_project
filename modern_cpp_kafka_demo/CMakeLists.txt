@@ -57,7 +57,7 @@ include_directories(${LIBRDKAFKA_INCLUDE_DIR}/librdkafka)
 message(STATUS "LIBRDKAFKA_INCLUDE_DIR path: ${LIBRDKAFKA_INCLUDE_DIR}")
 
 # 指定 rdkafka 库的路径
-set(LIBRDKAFKA_LIBRARY_LIB ${LIBRDKAFKA_LIBRARY_DIR}/librdkafka.so)
+set(LIBRDKAFKA_LIBRARY_LIB ${LIBRDKAFKA_LIBRARY_DIR}/librdkafka.so pthread)
 message(STATUS "LIBRDKAFKA_LIBRARY_LIB path: ${LIBRDKAFKA_LIBRARY_LIB}")
 
 # 包含 modern-cpp-kafka 路径
