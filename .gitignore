@@ -97,3 +97,6 @@ uWebSockets_demo/product/
 
 librock/build/
 librock/product/
+
+pod5_format_demo/build
+pod5_format_demo/product
