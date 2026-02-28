@@ -14,3 +14,5 @@ add_executable(instruct_1 instruction.cpp)
 
 add_executable(xiaopen_test_1 xiaopen_test_1.cpp)
 target_link_libraries(xiaopen_test_1 pthread)
+
+add_executable(placement_new_test_1 placement_new_test_1.cpp)
